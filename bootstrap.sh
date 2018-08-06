@@ -1,37 +1,34 @@
 #!/bin/bash
 set -e -u -o pipefail
 
-SOURCE_FILE='tangling_test.adoc'
-
 tangle() {
-    local CHUNK_NAME=$1
-    local LITERAL_SECTION=0
+    local INSIDE_LITERAL=0
     local CURRENT_CHUNK=''
     while read LINE ; do
-        test "$LINE" = '----' && {
-            if test $LITERAL_SECTION -eq 0 ; then
-                LITERAL_SECTION=1
+        test "$LINE" = '////' && {
+            if test $INSIDE_LITERAL -eq 0 ; then
+                INSIDE_LITERAL=1
             else
-                LITERAL_SECTION=0
+                INSIDE_LITERAL=0
                 CURRENT_CHUNK=''
             fi
             continue
         }
-        test $LITERAL_SECTION -ne 0 || continue
+        test $INSIDE_LITERAL -ne 0 || continue
         test -n "$CURRENT_CHUNK" || {
             CURRENT_CHUNK=$LINE
             continue
         }
-        test "$CURRENT_CHUNK" = "$CHUNK_NAME" || continue
+        test "$CURRENT_CHUNK" = "$1" || continue
         case $LINE in
-            "# "*)
-                tangle "$LINE"
+            /*)
+                tangle "${LINE:1}"
                 ;;
             *)
                 echo $LINE
                 ;;
         esac
-    done 0<$SOURCE_FILE
+    done 0<tangling_test.adoc
 }
 
-tangle '# /tangle.cpp'
+tangle '/tangle.cpp'

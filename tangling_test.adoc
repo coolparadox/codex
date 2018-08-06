@@ -2,35 +2,35 @@
 Rafael Lorandi <coolparadox@gmail.com>
 v0.0, 2018-08-04
 
-----
-# /tangle.cpp
-# tangle includes
-----
+////
+/tangle.cpp
+/tangle includes
+////
 
-----
-# tangle main
+////
+tangle main
 int main() {
-    # tangle main body
+    /tangle main body
 }
-----
+////
 
-----
-# tangle includes
+////
+tangle includes
 #include <iostream>
-----
+////
 
-----
-# tangle main body
+////
+tangle main body
 std::cout << "Yo!" << std::endl;
-----
+////
 
-----
-# tangle includes
+////
+tangle includes
 #include <limits>
-----
+////
 
-----
-# /tangle.cpp
+////
+/tangle.cpp
 
-# tangle main
-----
+/tangle main
+////

@@ -22,7 +22,7 @@ tangle() {
         test "$CURRENT_CHUNK" = "$1" || continue
         case $LINE in
             /*)
-                tangle "${LINE:1}"
+                tangle "$LINE"
                 ;;
             *)
                 echo $LINE
@@ -31,4 +31,4 @@ tangle() {
     done 0<tangling_test.adoc
 }
 
-tangle '/tangle.cpp'
+tangle '//yo.cpp'

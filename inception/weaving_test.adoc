@@ -1,0 +1,139 @@
+= Weaving Test
+Rafael Lorandi <coolparadox@gmail.com>
+v0.0, 2018-08-11
+
+Yo tool needs includes.
+
+////
+//yo.cpp
+/yo includes
+////
+
+.yo.cpp (1 of 2)
+[#yo_cpp_1]
+++++
+<div id="yo_cpp_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">yo.cpp (1 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<em><a href="#yo_includes_1">yo includes</a></em>
+</div>
+<div class="title"><sup>
+Next part: <a href="#yo_cpp_2">yo.cpp (2 of 2)</a>.
+</sup></div>
+</div>
+++++
+
+Main is the gate for any tool.
+
+////
+/yo main
+int main() {
+    /yo main body
+}
+////
+
+.yo main
+[#yo_main_1]
+++++
+<div id="yo_main_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">yo main</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">int main() {</code><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#yo_main_body_1">yo main body</a></em><br>
+<code style="background-color:unset;">}</code>
+</div>
+<div class="title"><sup>
+Used by: <a href="#yo_cpp_2">yo.cpp (2 of 2)</a>.
+</sup></div>
+</div>
+++++
+
+Yo salutes through standard output, so we need access to std::cout.
+
+////
+/yo includes
+#include <iostream>
+////
+
+.yo includes (1 of 2)
+[#yo_includes_1]
+++++
+<div id="yo_includes_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">yo includes (1 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">#include &lt;iostream&gt;</code><br>
+</div>
+<div class="title"><sup>
+Next part: <a href="#yo_includes_2">yo includes (2 of 2)</a>.
+Used by: <a href="#yo_cpp_1">yo.cpp (1 of 2)</a>.
+</sup></div>
+</div>
+++++
+
+The greeting is objective and profound.
+
+////
+/yo main body
+std::cout << "Yo!" << std::endl;
+////
+
+.yo main body
+[#yo_main_body_1]
+++++
+<div id="yo_main_body_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">yo main body</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">std::cout << "Yo!" << std::endl;</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#yo_main_1">yo main</a>.
+</sup></div>
+</div>
+++++
+
+This is likely superfluous.
+
+////
+/yo includes
+#include <limits>
+////
+
+.yo includes (2 of 2)
+[#yo_includes_2]
+++++
+<div id="yo_includes_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">yo includes (2 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">#include &lt;limits&gt;</code><br>
+</div>
+<div class="title"><sup>
+Previous part: <a href="#yo_includes_1">yo includes (1 of 2)</a>.
+Used by: <a href="#yo_cpp_1">yo.cpp (1 of 2)</a>.
+</sup></div>
+</div>
+++++
+
+For completeness:
+
+////
+//yo.cpp
+
+/yo main
+////
+
+.yo.cpp (2 of 2)
+[#yo_cpp_2]
+++++
+<div id="yo_cpp_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">yo.cpp (2 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<br>
+<em><a href="#yo_main_1">yo main</a></em>
+</div>
+<div class="title"><sup>
+Previous part: <a href="#yo_cpp_1">yo.cpp (1 of 2)</a>.
+</sup></div>
+</div>
+++++
+
+End.

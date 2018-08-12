@@ -1,4 +1,4 @@
-= Codedoc Book
+= Codedoc
 Rafael Lorandi <coolparadox@gmail.com>
 :doctype: book
 :sectnums:
@@ -65,7 +65,7 @@ Codedoc is designed to serve as a tool for literate programming.
 
 This is more easily explained by examples.
 
-=== Hello world
+=== Code File Blocks
 
 Say the following appears anywhere in an asciidoc document:
 
@@ -80,11 +80,17 @@ int main() {
 ////
 ....
 
-In asciidoc, `////` delimits a comment block that is ignored when you process the asciidoc document
-for HTML or other format generation.
-Running codedoc over the asciidoc document however produces two outcomes:
+Note that the first content line starts with `//`
+followed by a file name 
+(in this case file hello.c in a flat directory,
+but you can name files under subdirectories as well).
+Further lines of the block contain the source code of hello.c.
 
-. A processed asciidoc document that renders this block as:
+If you process the asciidoc document directly,
+the above block is ignored as `////` delimits a comment block in asciidoc syntax.
+Running *codedoc* instead over the asciidoc document however produces two outcomes:
+
+. A processed version of the asciidoc document that renders this block as:
 +
 .hello.c
 [[hello.c]]
@@ -110,14 +116,17 @@ int main() {
 }
 ....
 
-=== Code Chunks
+Code file blocks therefore allow the documentation of a software project
+to be the primary source of its source code.
+
+=== Code Chunk Blocks
 
 If you're new to literate programming, at this point you may be wondering
 what is the benefit of bringing whole source files to the realm of a document only to
 extract them in a preprocessing step afterwards.
 
 Things get more interesting when chunks of code are introduced.
-As the name implies, code chunks are simply named fragments of source code. Examples:
+As the name implies, code chunk blocks are simply named fragments of source code. Examples:
 
 ....
 ////
@@ -138,7 +147,7 @@ int main() {
 
 The first content line of each comment block is the chunk name
 (the leading `/` is obligatory for enablement of codedoc processing over the comment block).
-Given these chunks, _hello.c_ could be defined as:
+Given these chunks, _hello.c_ can then be defined as the following source code block:
 
 ....
 ////
@@ -147,6 +156,35 @@ Given these chunks, _hello.c_ could be defined as:
 /hello main
 ////
 ....
+
+Now codedoc generates a processed version of the asciidoc document
+that renders these blocks as:
+
+.hello includes
+[[hello-includes]]
+_Used by: <<hello.c>>._
+[source,c]
+----
+#include <stdio.h>
+----
+
+.hello main
+[[hello-main]]
+_Used by: <<hello.c>>._
+[source,c]
+----
+int main() {
+    printf("Hello world!\n");
+    return 0;
+}
+----
+
+.hello.c
+====
+_<<<<hello-includes>>>>_ +
+_<<<<hello-main>>>>_
+====
+
 
 Note the //...
 

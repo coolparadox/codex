@@ -1,6 +1,11 @@
 = Weaving Test
 Rafael Lorandi <coolparadox@gmail.com>
 v0.0, 2018-08-11
+:toc: macro
+
+toc::[]
+
+== Chunks Demonstration
 
 Yo tool needs includes.
 
@@ -136,4 +141,51 @@ Previous part: <a href="#yo_cpp_1">yo.cpp (1 of 2)</a>.
 </div>
 ++++
 
-End.
+[appendix]
+== Table of Chunks
+
+++++
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Chunks</div>
+<ul class="sectlevel1">
+<li><a href="#yo_cpp_1">yo.cpp (1 of 2)</a></li>
+<li><a href="#yo_main_1">yo main</a></li>
+<li><a href="#yo_includes_1">yo includes (1 of 2)</a></li>
+<li><a href="#yo_main_body_1">yo main body</a></li>
+<li><a href="#yo_includes_2">yo includes (2 of 2)</a></li>
+<li><a href="#yo_cpp_2">yo.cpp (2 of 2)</a></li>
+</ul>
+</div>
+++++
+
+[appendix]
+== Full Source Code
+
+++++
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Files</div>
+<ul class="sectlevel1">
+<li><a href="#file_yo_cpp">yo.cpp</a></li>
+</ul>
+</div>
+++++
+
+[discrete]
+=== yo.cpp
+
+[#file_yo_cpp]
+++++
+<div id="file_yo_cpp" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="content" style="margin-bottom:.5em;">
+<table style="background:unset;border:unset;">
+<tr style="background:unset;"><td id="file_yo_cpp_line_1" style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">1</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">#include &lt;iostream&gt;</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#yo_includes_1">yo includes (1 of 2)</a></em></sub></td></tr>
+<tr style="background:unset;"><td style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">2</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">#include &lt;limits&gt;</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#yo_includes_2">yo includes (2 of 2)</a></em></sub></td></tr>
+<tr style="background:unset;"><td style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">3</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;"></code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#yo_cpp_2">yo.cpp (2 of 2)</a></em></sub></td></tr>
+<tr style="background:unset;"><td style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">4</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">int main() {</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#yo_main_1">yo main</a></em></sub></td></tr>
+<tr style="background:unset;"><td style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">15</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">std::cout << "Yo!" << std::endl;</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#yo_main_body_1">yo main body</a></em></sub></td></tr>
+<tr style="background:unset;"><td style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">26</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">}</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#yo_main_1">yo main</a></em></sub></td></tr>
+</table>
+</div>
+</div>
+++++
+

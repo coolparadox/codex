@@ -57,7 +57,7 @@ eWEB served as a source of inspiration for Codedoc.
 
 = User Guide
 
-== Introduction
+== Codedoc by Examples
 
 Codedoc is a preprocessor for asciidoc documentation
 that recognizes asciidoc comment blocks containing predefined content as pieces of source code.
@@ -130,7 +130,7 @@ what is the benefit of bringing whole source files to the realm of a document on
 extract them in a preprocessing step afterwards.
 
 Things get more interesting when chunks of code are introduced.
-As the name implies, code chunk blocks are simply named fragments of source code. Examples:
+As the name implies, code chunk blocks are named fragments of source code. Examples:
 
 ....
 ////
@@ -149,9 +149,12 @@ int main() {
 ////
 ....
 
-The first content line of each comment block is the chunk name
-(the leading `/` is obligatory for enablement of codedoc processing over the comment block).
-Given these chunks, _hello.c_ can then be defined as the following source code block:
+Codedoc understands a comment block
+whose first content line contains a single leading `/`
+as a code chunk.
+
+Given the above chunks anywhere in the document,
+_hello.c_ could then be defined as the following code file block:
 
 ....
 ////
@@ -161,38 +164,82 @@ Given these chunks, _hello.c_ can then be defined as the following source code b
 ////
 ....
 
-Now codedoc generates a processed version of the asciidoc document
+As you see, code file hello.c references code chunks.
+Now *codedoc* generates a processed version of the asciidoc document
 that renders these blocks as:
 
 .hello includes
-[[hello-includes]]
-[source,c]
-----
-#include <stdio.h>
-----
+[#hello_includes_1]
+++++
+<div id="hello_includes_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello includes</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">#include &lt;stdio.h&gt;</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_2">hello.c</a>.
+</sup></div>
+</div>
+++++
 
 .hello main
-[[hello-main]]
-[source,c]
-----
+[#hello_main_1]
+++++
+<div id="hello_main_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello main</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">int main() {</code><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><br>
+<code style="background-color:unset;">}</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_2">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.hello.c
+[#hello_c_2]
+++++
+<div id="hello_c_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello.c</div>
+<div class="content" style="margin-bottom:.5em;">
+<em><a href="#hello_includes_1">hello includes</a></em><br>
+<em><a href="#hello_main_1">hello main</a></em><br>
+</div>
+</div>
+++++
+
+(This simple example does not require it,
+but code chunks can also reference other code chunks.)
+
+Same as before, file _hello.c_ is generated in filesystem
+containing the result of recursively de-referencing its chunk references:
+
+....
+#include <stdio.h>
 int main() {
     printf("Hello world!\n");
     return 0;
 }
-----
+....
 
-.hello.c
-====
-_<<<<hello-includes>>>>_ +
-_<<<<hello-main>>>>_
-====
+There is no requirement as to
+the order by which chunk and code blocks are defined within the document --
+you are free to reference chunks defined later in the document as well,
+if you decide it suits better the explanation flow of your documentation.
 
+Code chunks support a powerful concept in literate programming, namely that
+software programs should be considered works of literature.
+Therefore you cannot properly document software if you are restricted
+to the realm of machine understandable entities like functions and methods,
+as they don't usually capture optimally
+how the ideas behind the source code were formed.
 
-Note the //...
-
-chhubks are recursive
-any order in file
-
+[quote, Donald Knuth, Introducer of the literate programming paradigm]
+Instead of imagining that our main task is to instruct a computer what to do,
+let us concentrate rather on explaining to human beings what we want a computer to do.
 
 === Chunk Continuation
 

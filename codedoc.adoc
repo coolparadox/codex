@@ -65,7 +65,7 @@ Codedoc is designed to serve as a tool for literate programming.
 
 This is more easily explained by examples.
 
-=== Code File Blocks
+=== Code Files
 
 Say the following appears anywhere in an asciidoc document:
 
@@ -120,17 +120,20 @@ int main() {
 }
 ....
 
-Code file blocks therefore allow the documentation of a software project
+Blocks of code file therefore allow the documentation of a software project
 to be the primary source of its source code.
 
-=== Code Chunk Blocks
+=== Code Chunks
 
 If you're new to literate programming, at this point you may be wondering
 what is the benefit of bringing whole source files to the realm of a document only to
 extract them in a preprocessing step afterwards.
 
 Things get more interesting when chunks of code are introduced.
-As the name implies, code chunk blocks are named fragments of source code. Examples:
+As the name implies, blocks of code chunk are named fragments of source code.
+
+For instance, we know that the source of hello program has
+a section for inclusion of required language libraries, say:
 
 ....
 ////
@@ -139,22 +142,35 @@ As the name implies, code chunk blocks are named fragments of source code. Examp
 ////
 ....
 
+Also, every C program has the main() function:
+
 ....
 ////
 /hello main
 int main() {
-    printf("Hello world!\n");
+    /greet the world
     return 0;
 }
 ////
 ....
 
-Codedoc understands a comment block
+Finally, let's consider that
+the main business of hello is to greet the world in an objective and profound way:
+
+....
+////
+/greet the world
+printf("Hello world!\n");
+////
+....
+
+(As you may have guessed,
+codedoc understands a comment block
 whose first content line contains a single leading `/`
-as a code chunk.
+as a code chunk.)
 
 Given the above chunks anywhere in the document,
-_hello.c_ could then be defined as the following code file block:
+_hello.c_ could then be defined as the following block of code file:
 
 ....
 ////
@@ -164,9 +180,8 @@ _hello.c_ could then be defined as the following code file block:
 ////
 ....
 
-As you see, code file hello.c references code chunks.
 Now *codedoc* generates a processed version of the asciidoc document
-that renders these blocks as:
+that renders these blocks as the following:
 
 .hello includes
 [#hello_includes_1]
@@ -189,12 +204,26 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 <div class="title">hello main</div>
 <div class="content" style="margin-bottom:.5em;">
 <code style="background-color:unset;">int main() {</code><br>
-<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_1">greet the world</a></em><br>
 <code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><br>
 <code style="background-color:unset;">}</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_2">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.greet the world
+[#greet_the_world_1]
+++++
+<div id="greet_the_world_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">greet the world</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">printf("Hello world!\n");</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_main_1">hello main</a>.
 </sup></div>
 </div>
 ++++
@@ -211,11 +240,9 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 </div>
 ++++
 
-(This simple example does not require it,
-but code chunks can also reference other code chunks.)
-
 Same as before, file _hello.c_ is generated in filesystem
-containing the result of recursively de-referencing its chunk references:
+containing the result of recursively de-referencing
+(and properly indenting) its chunks:
 
 ....
 #include <stdio.h>
@@ -226,16 +253,19 @@ int main() {
 ....
 
 There is no requirement as to
-the order by which chunk and code blocks are defined within the document --
+the order by which chunk and file blocks are defined within the document --
 you are free to reference chunks defined later in the document as well,
 if you decide it suits better the explanation flow of your documentation.
 
 Code chunks support a powerful concept in literate programming, namely that
 software programs should be considered works of literature.
 Therefore you cannot properly document software if you are restricted
-to the realm of machine understandable entities like functions and methods,
-as they don't usually capture optimally
-how the ideas behind the source code were formed.
+to the order imposed by machine understandable entities (like functions and methods)
+in the sense an underlying idea of a given software
+is usually splattered along its code base in several places and files.
+Code chunks allows all related pieces of source code to be gathered into
+a single place of its documentation to be explained in a way
+more suited to human understanding.
 
 [quote, Donald Knuth, Introducer of the literate programming paradigm]
 Instead of imagining that our main task is to instruct a computer what to do,

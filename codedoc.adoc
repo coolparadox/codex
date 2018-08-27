@@ -16,7 +16,6 @@ instead of machine demanded order.
 
 Asciidoc is a plain text, human readable document format, semantically equivalent to DocBook,
 but using lightweight markup conventions.
-Asciidoc files can be read as is or converted to HTML, DocBook, PDF and other formats.
 
 [colophon]
 = Colophon
@@ -91,6 +90,7 @@ the above block is ignored as `////` delimits a comment block in asciidoc syntax
 Running *codedoc* instead over the asciidoc document however produces two outcomes:
 
 . A processed version of the asciidoc document that renders this block as:
+footnote:[Only HTML backend is currently supported.]
 +
 .hello.c
 [#hello_c_1]
@@ -125,9 +125,9 @@ to be the primary source of its source code.
 
 === Code Chunks
 
-If you're new to literate programming, at this point you may be wondering
-what is the benefit of bringing whole source files to the realm of a document only to
-extract them in a preprocessing step afterwards.
+There is no real gain in
+bringing whole source files to the realm of a document
+only to extract them in a preprocessing step afterwards.
 
 Things get more interesting when chunks of code are introduced.
 As the name implies, blocks of code chunk are named fragments of source code.
@@ -263,17 +263,114 @@ Therefore you cannot properly document software if you are restricted
 to the order imposed by machine understandable entities (like functions and methods)
 in the sense an underlying idea of a given software
 is usually splattered along its code base in several places and files.
-Code chunks allows all related pieces of source code to be gathered into
-a single place of its documentation to be explained in a way
-more suited to human understanding.
+
+=== Chunk Continuation
+
+A given code chunk (or file) may appear splitted along an asciidoc document,
+and codedoc will happily consider them as the same unit.
+
+For instance, let's add a complement to the greeting of last chapter:
+
+....
+////
+/greet the world
+printf("It's a beautiful day.\n");
+////
+....
+
+Now we have the following rendering:
+
+.hello includes
+[#hello_includes_2]
+++++
+<div id="hello_includes_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello includes</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">#include &lt;stdio.h&gt;</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_3">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.hello main
+[#hello_main_2]
+++++
+<div id="hello_main_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello main</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">int main() {</code><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_2">greet the world</a></em><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><br>
+<code style="background-color:unset;">}</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_3">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.greet the world (1 of 2)
+[#greet_the_world_2]
+++++
+<div id="greet_the_world_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">greet the world (1 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">printf("Hello world!\n");</code><br>
+</div>
+<div class="title"><sup>
+Next: <a href="#greet_the_world_3">greet the world (2 of 2)</a>.
+Used by: <a href="#hello_main_2">hello main</a>.
+</sup></div>
+</div>
+++++
+
+.hello.c
+[#hello_c_3]
+++++
+<div id="hello_c_3" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello.c</div>
+<div class="content" style="margin-bottom:.5em;">
+<em><a href="#hello_includes_2">hello includes</a></em><br>
+<em><a href="#hello_main_2">hello main</a></em><br>
+</div>
+</div>
+++++
+
+.greet the world (2 of 2)
+[#greet_the_world_3]
+++++
+<div id="greet_the_world_3" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">greet the world (2 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<code style="background-color:unset;">printf("It's a beautiful day.\n");</code><br>
+</div>
+<div class="title"><sup>
+Previous: <a href="#greet_the_world_2">greet the world (1 of 2)</a>.
+Used by: <a href="#hello_main_2">hello main</a>.
+</sup></div>
+</div>
+++++
+
+And the generated hello.c file becomes:
+
+....
+#include <stdio.h>
+int main() {
+    printf("Hello world!\n");
+    printf("It's a beautiful day.\n");
+    return 0;
+}
+....
+
+Continuation of code chunks eases all related pieces of source code
+to be gathered into a single place of the software documentation, 
+for then to be explained in a way more palatable to humans.
 
 [quote, Donald Knuth, Introducer of the literate programming paradigm]
 Instead of imagining that our main task is to instruct a computer what to do,
 let us concentrate rather on explaining to human beings what we want a computer to do.
-
-=== Chunk Continuation
-
-...
 
 == Installation
 

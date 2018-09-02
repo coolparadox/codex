@@ -1,9 +1,10 @@
 = Codedoc
 Rafael Lorandi <coolparadox@gmail.com>
+:linkcss:
+:stylesheet: codedoc.css
 :doctype: book
 :sectnums:
 :toc: left
-:source-highlighter: coderay
 :revnumber: 0.0
 :revdate: 09-08-2018
 :revremark: Scratching phase
@@ -98,11 +99,11 @@ footnote:[Only HTML backend is currently supported.]
 <div id="hello_c_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello.c</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">#include &lt;stdio.h&gt;</code><br>
-<code style="background-color:unset;">int main() {</code><br>
-<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><br>
-<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><br>
-<code style="background-color:unset;">}</code><br>
+<code class="codedoc" style="background-color:unset;">#include &lt;stdio.h&gt;</code><span style="opacity:.5;">&crarr;</span><br>
+<code style="background-color:unset;">int main() {</code><span style="opacity:.5;">&crarr;</span><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span style="opacity:.5;">&crarr;</span><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span style="opacity:.5;">&crarr;</span><br>
+<code style="background-color:unset;">}</code><span style="opacity:.5;">&crarr;</span><br>
 </div>
 </div>
 ++++
@@ -189,7 +190,7 @@ that renders these blocks as the following:
 <div id="hello_includes_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello includes</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">#include &lt;stdio.h&gt;</code><br>
+<code style="background-color:unset;">#include &lt;stdio.h&gt;</code><span style="opacity:.5;">&crarr;</span><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_2">hello.c</a>.
@@ -203,10 +204,10 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 <div id="hello_main_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello main</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">int main() {</code><br>
+<code style="background-color:unset;">int main() {</code><span style="opacity:.5;">&crarr;</span><br>
 <code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_1">greet the world</a></em><br>
-<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><br>
-<code style="background-color:unset;">}</code><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span style="opacity:.5;">&crarr;</span><br>
+<code style="background-color:unset;">}</code><span style="opacity:.5;">&crarr;</span><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_2">hello.c</a>.
@@ -220,7 +221,7 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 <div id="greet_the_world_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">printf("Hello world!\n");</code><br>
+<code style="background-color:unset;">printf("Hello world!\n");</code><span style="opacity:.5;">&crarr;</span><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_main_1">hello main</a>.
@@ -286,7 +287,7 @@ Now we have the following rendering:
 <div id="hello_includes_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello includes</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">#include &lt;stdio.h&gt;</code><br>
+<code style="background-color:unset;">#include &lt;stdio.h&gt;<span style="opacity:.5;">&crarr;</span></code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_3">hello.c</a>.
@@ -300,10 +301,10 @@ Used by: <a href="#hello_c_3">hello.c</a>.
 <div id="hello_main_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello main</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">int main() {</code><br>
+<code style="background-color:unset;">int main() {<span style="opacity:.5;">&crarr;</span></code><br>
 <code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_2">greet the world</a></em><br>
-<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><br>
-<code style="background-color:unset;">}</code><br>
+<code style="background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;<span style="opacity:.5;">&crarr;</span></code><br>
+<code style="background-color:unset;">}<span style="opacity:.5;">&crarr;</span></code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_3">hello.c</a>.
@@ -317,7 +318,7 @@ Used by: <a href="#hello_c_3">hello.c</a>.
 <div id="greet_the_world_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world (1 of 2)</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">printf("Hello world!\n");</code><br>
+<code style="background-color:unset;">printf("Hello world!\n");<span style="opacity:.5;">&crarr;</span></code><br>
 </div>
 <div class="title"><sup>
 Next: <a href="#greet_the_world_3">greet the world (2 of 2)</a>.
@@ -344,7 +345,7 @@ Used by: <a href="#hello_main_2">hello main</a>.
 <div id="greet_the_world_3" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world (2 of 2)</div>
 <div class="content" style="margin-bottom:.5em;">
-<code style="background-color:unset;">printf("It's a beautiful day.\n");</code><br>
+<code style="background-color:unset;">printf("It's a beautiful day.\n");<span style="opacity:.5;">&crarr;</span></code><br>
 </div>
 <div class="title"><sup>
 Previous: <a href="#greet_the_world_2">greet the world (1 of 2)</a>.
@@ -371,6 +372,87 @@ for then to be explained in a way more palatable to humans.
 [quote, Donald Knuth, Introducer of the literate programming paradigm]
 Instead of imagining that our main task is to instruct a computer what to do,
 let us concentrate rather on explaining to human beings what we want a computer to do.
+
+=== Special Directives
+
+Besides code files and code chunks,
+codedoc recognizes asciidoc comment blocks containing
+a few single line directives.
+
+==== Table of Chunks
+
+Lists all chunks of the document.
+
+....
+////
+///table_of_chunks
+////
+....
+
+Produces something like:
+
+++++
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Chunks</div>
+<ul class="sectlevel1">
+<li><a href="#hello_includes_2">hello includes</a></li>
+<li><a href="#hello_main_2">hello main</a></li>
+<li><a href="#greet_the_world_2">greet the world (1 of 2)</a></li>
+<li><a href="#hello_c_3">hello.c</a></li>
+<li><a href="#greet_the_world_3">greet the world (2 of 2)</a></li>
+<li><a href="#"></a></li>
+</ul>
+</div>
+++++
+
+==== Exploded Code
+
+....
+////
+///exploded_code
+////
+....
+
+Produces:
+
+. A table of code files;
+. One level 3 chapter after each code file containing its full listing with all chunks dereferenced.
+
+Sample:
+
+++++
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Files</div>
+<ul class="sectlevel1">
+<li><a href="#file_hello_c">hello.c</a></li>
+</ul>
+</div>
+++++
+
+[#file_hello_c]
+[discrete]
+=== hello.c
+
+_[small]#Origin chunk: <<hello_c_3>>#_
+
+++++
+<div class="exampleblock" style="margin-bottom:1.25em;">
+<div class="content" style="margin-bottom:.5em;">
+<table style="background:unset;border:unset;">
+<tr style="background:unset;"><td id="file_hello_c_line_1" style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">1</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">#include &lt;stdio.h&gt;</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#hello_includes_2">hello includes</a></em></sub></td></tr>
+<tr style="background:unset;"><td id="file_hello_c_line_2" style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">2</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">int main() {</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#hello_main_2">hello main</a></em></sub></td></tr>
+<tr style="background:unset;"><td id="file_hello_c_line_3" style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">3</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#greet_the_world_2">greet the world (1 of 2)</a></em></sub></td></tr>
+<tr style="background:unset;"><td id="file_hello_c_line_4" style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">4</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;printf("It's a beautiful day.\n");</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#greet_the_world_3">greet the world (2 of 2)</a></em></sub></td></tr>
+<tr style="background:unset;"><td id="file_hello_c_line_5" style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">5</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#hello_main_2">hello main</a></em></sub></td></tr>
+<tr style="background:unset;"><td id="file_hello_c_line_6" style="line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em;">6</td><td style="line-height:unset;padding:unset;"><code style="word-spacing:unset;padding:unset;background-color:unset;">}</code><span style="opacity:.5;">&crarr;</span>&nbsp;<sub><em><a style="text-decoration:none;opacity:.5;" href="#hello_main_2">hello main</a></em></sub></td></tr>
+</table>
+</div>
+</div>
+++++
+
+Exploded code is fully cross referenced back to provider chunks.
+Also, each line is uniquely anchored, allowing direct links: 
+pass:[<a href="#file_hello_c_line_4">file_hello_c_line_4</a>]
 
 == Installation
 

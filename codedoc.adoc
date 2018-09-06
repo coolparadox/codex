@@ -6,7 +6,6 @@ Rafael Lorandi <coolparadox@gmail.com>
 :revnumber: 0.0
 :revdate: 09-08-2018
 :revremark: Scratching phase
-:codedoc:
 
 ////
 Remove following style defs when performed by weaving:
@@ -119,7 +118,7 @@ footnote:[Only HTML backend is currently supported.]
 <code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span><br>
 <code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span class="codedoc">&crarr;</span><br>
 <code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">}</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">}</code><br>
 </div>
 </div>
 ++++
@@ -206,7 +205,7 @@ that renders these blocks as the following:
 <div id="hello_includes_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello includes</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">#include &lt;stdio.h&gt;</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">#include &lt;stdio.h&gt;</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_2">hello.c</a>.
@@ -221,9 +220,9 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 <div class="title">hello main</div>
 <div class="content" style="margin-bottom:.5em;">
 <code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_1">greet the world</a></em><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_1">greet the world</a></em><span class="codedoc">&crarr;</span><br>
 <code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">}</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">}</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_2">hello.c</a>.
@@ -237,7 +236,7 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 <div id="greet_the_world_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">printf("Hello world!\n");</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">printf("Hello world!\n");</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_main_1">hello main</a>.
@@ -251,7 +250,7 @@ Used by: <a href="#hello_main_1">hello main</a>.
 <div id="hello_c_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello.c</div>
 <div class="content" style="margin-bottom:.5em;">
-<em><a href="#hello_includes_1">hello includes</a></em><br>
+<em><a href="#hello_includes_1">hello includes</a></em><span class="codedoc">&crarr;</span><br>
 <em><a href="#hello_main_1">hello main</a></em><br>
 </div>
 </div>
@@ -281,9 +280,12 @@ to the order imposed by machine understandable entities (like functions and meth
 in the sense an underlying idea of a given software
 is usually splattered along its code base in several places and files.
 
+From now on in this document, when used indistinctly,
+the work _chunk_ means both code chunks and code files.
+
 === Chunk Continuation
 
-A given code chunk (or file) may appear splitted along an asciidoc document,
+A given chunk may appear split along an asciidoc document,
 and codedoc will happily consider them as the same unit.
 
 For instance, let's add a complement to the greeting of last chapter:
@@ -303,7 +305,7 @@ Now we have the following rendering:
 <div id="hello_includes_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello includes</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">#include &lt;stdio.h&gt;<span class="codedoc">&crarr;</span></code><br>
+<code class="codedoc">#include &lt;stdio.h&gt;</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_3">hello.c</a>.
@@ -318,9 +320,9 @@ Used by: <a href="#hello_c_3">hello.c</a>.
 <div class="title">hello main</div>
 <div class="content" style="margin-bottom:.5em;">
 <code class="codedoc">int main() {<span class="codedoc">&crarr;</span></code><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_2">greet the world</a></em><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_2">greet the world</a></em><span class="codedoc">&crarr;</span><br>
 <code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;<span class="codedoc">&crarr;</span></code><br>
-<code class="codedoc">}<span class="codedoc">&crarr;</span></code><br>
+<code class="codedoc">}</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_3">hello.c</a>.
@@ -334,7 +336,7 @@ Used by: <a href="#hello_c_3">hello.c</a>.
 <div id="greet_the_world_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world (1 of 2)</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">printf("Hello world!\n");<span class="codedoc">&crarr;</span></code><br>
+<code class="codedoc">printf("Hello world!\n");</code><br>
 </div>
 <div class="title"><sup>
 Next: <a href="#greet_the_world_3">greet the world (2 of 2)</a>.
@@ -349,7 +351,7 @@ Used by: <a href="#hello_main_2">hello main</a>.
 <div id="hello_c_3" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello.c</div>
 <div class="content" style="margin-bottom:.5em;">
-<em><a href="#hello_includes_2">hello includes</a></em><br>
+<em><a href="#hello_includes_2">hello includes</a></em><span class="codedoc">&crarr;</span><br>
 <em><a href="#hello_main_2">hello main</a></em><br>
 </div>
 </div>
@@ -361,7 +363,7 @@ Used by: <a href="#hello_main_2">hello main</a>.
 <div id="greet_the_world_3" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world (2 of 2)</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">printf("It's a beautiful day.\n");<span class="codedoc">&crarr;</span></code><br>
+<code class="codedoc">printf("It's a beautiful day.\n");</code><br>
 </div>
 <div class="title"><sup>
 Previous: <a href="#greet_the_world_2">greet the world (1 of 2)</a>.
@@ -381,7 +383,7 @@ int main() {
 }
 ....
 
-Continuation of code chunks eases all related pieces of source code
+Continuation of chunks eases all related pieces of source code
 to be gathered into a single place of the software documentation, 
 for then to be explained in a way more palatable to humans.
 
@@ -431,8 +433,8 @@ Produces something like:
 
 Produces:
 
-. A table of code files;
-. One level 3 chapter after each code file containing its full listing with all chunks dereferenced.
+* A table of code files;
+* One level 3 chapter after each code file containing its full listing with all chunks dereferenced.
 
 Sample:
 
@@ -469,6 +471,123 @@ _[small]#Origin chunk: <<hello_c_3>>#_
 Exploded code is fully cross referenced back to provider chunks.
 Also, each line is uniquely anchored, allowing direct links: 
 pass:[<a href="#file_hello_c_line_4">file_hello_c_line_4</a>]
+
+=== Miscellaneous
+
+==== Chunk Reference Escape
+
+What if a given literal line of code starts with a single `/`?
+
+....
+////
+//myfile.txt
+/This is a real line of my file that happens to start with a single slash.
+////
+....
+
+The above doesn't work as the line would be handled as a chunk reference.
+As a workaround, codedoc considers inside chunks any line starting with `//`
+as a literal line of code with the heading `//` replaced by `/`.
+
+So the above chunk is required to be written instead as:
+
+....
+////
+//myfile.txt
+//This is a real line of my file that happens to start with a single slash.
+////
+....
+
+==== Line Break Escape
+
+All chunk interface seen so far is purposely line oriented:
+one cannot place code and chunk references in the same line.
+This is a design choice that simplifies input syntax
+and at the same time hopefully covers the majority of cases in source code production.
+
+It would be awesome however to be able to eventually concatenate chunks and literal code
+in the same line of generated code.
+An extension of chunk naming is provided as a way of achieving such goal.
+
+The extended syntax works by appending a trailing `/` to the chunk reference,
+followed by exactly two further characters that enable
+pre and post continuation of the chunk in the same line.
+
+As usual, an example:
+
+....
+////
+/my chunk
+world
+////
+....
+
+....
+////
+//my_file.txt
+Hello 
+/my chunk/++
+!
+////
+....
+
+Note the `++` in the reference to chunk _my chunk_.
+The first `+` tells codedoc that _my chunk_ is part of the end of the previous line.
+The last `+` tells that _my chunk_ does not break its line at the end,
+causing the next line in sequence to be appended.
+
+The generated file _my_file.txt_ therefore contains:
+
+....
+Hello world!
+....
+
+The counterpart of `+` in the above context is a `.` character,
+meaning the usual line oriented behavior.
+In fact, all chunk references seen so far in the form:
+
+....
+/chunk
+....
+
+are shortcuts to the extended form:
+
+....
+/chunk/..
+....
+
+==== Codedoc Attribute
+
+Asciidoc files generated by codedoc contains the attribute _codedoc_.
+This can be used to deliver conditional content in rendered output
+based on evidence of codedoc processing.
+
+For example, this document has
+ifndef::codedoc[*not*]
+been processed by codedoc.
+
+The above paragraph was coded as:
+
+++++
+<div class="literalblock">
+<div class="content">
+<pre>For example, this document has
+ifndef&#58;:codedoc[*not*]
+been processed by codedoc.</pre>
+</div>
+</div>
+++++
+
+== Known Issues
+
+html only
+
+asciidoctor only?
+
+multiple asciidoc sources, include?
+
+tested with asciidoctor default style
+
 
 == Installation
 

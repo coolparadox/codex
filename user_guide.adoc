@@ -1,0 +1,541 @@
+= User Guide
+
+== Codedoc by Examples
+
+Codedoc is a preprocessor for asciidoc documentation
+that recognizes asciidoc comment blocks containing predefined content as pieces of source code.
+Codedoc is designed to serve as a tool for literate programming.
+
+This is more easily explained by examples.
+
+=== Code Files
+
+Say the following appears anywhere in an asciidoc document:
+
+....
+////
+//hello.c
+#include <stdio.h>
+int main() {
+    printf("Hello world!\n");
+    return 0;
+}
+////
+....
+
+Note that the first content line starts with `//`
+followed by a file name 
+(in this case file hello.c in a flat directory,
+but you can name files under subdirectories as well).
+Further lines of the block contain the source code of hello.c.
+
+If you process the asciidoc document directly,
+the above block is ignored as `////` delimits a comment block in asciidoc syntax.
+Running *codedoc* instead over the asciidoc document however produces two outcomes:
+
+. A processed version of the asciidoc document that renders this block as:
+footnote:[Only HTML backend is currently supported.]
++
+.hello.c
+[#hello_c_1]
+++++
+<div id="hello_c_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello.c</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">#include &lt;stdio.h&gt;</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">}</code><br>
+</div>
+</div>
+++++
++
+This block is named by anchor _#hello_c_1_,
+allowing references from anywhere in the processed document: <<hello_c_1>>
+
+. File _hello.c_ in filesystem containing:
++
+....
+#include <stdio.h>
+int main() {
+    printf("Hello world!\n");
+    return 0;
+}
+....
+
+Blocks of code file therefore allow the documentation of a software project
+to be the primary source of its source code.
+
+=== Code Chunks
+
+There is no real gain in
+bringing whole source files to the realm of a document
+only to extract them in a preprocessing step afterwards.
+
+Things get more interesting when chunks of code are introduced.
+As the name implies, blocks of code chunk are named fragments of source code.
+
+For instance, we know that the source of hello program has
+a section for inclusion of required language libraries, say:
+
+....
+////
+/hello includes
+#include <stdio.h>
+////
+....
+
+Also, every C program has the main() function:
+
+....
+////
+/hello main
+int main() {
+    /greet the world
+    return 0;
+}
+////
+....
+
+Finally, let's consider that
+the main business of hello is to greet the world in an objective and profound way:
+
+....
+////
+/greet the world
+printf("Hello world!\n");
+////
+....
+
+(As you may have guessed,
+codedoc understands a comment block
+whose first content line contains a single leading `/`
+as a code chunk.)
+
+Given the above chunks anywhere in the document,
+_hello.c_ could then be defined as the following block of code file:
+
+....
+////
+//hello.c
+/hello includes
+/hello main
+////
+....
+
+Now *codedoc* generates a processed version of the asciidoc document
+that renders these blocks as the following:
+
+.hello includes
+[#hello_includes_1]
+++++
+<div id="hello_includes_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello includes</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">#include &lt;stdio.h&gt;</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_2">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.hello main
+[#hello_main_1]
+++++
+<div id="hello_main_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello main</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_1">greet the world</a></em><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">}</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_2">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.greet the world
+[#greet_the_world_1]
+++++
+<div id="greet_the_world_1" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">greet the world</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">printf("Hello world!\n");</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_main_1">hello main</a>.
+</sup></div>
+</div>
+++++
+
+.hello.c
+[#hello_c_2]
+++++
+<div id="hello_c_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello.c</div>
+<div class="content" style="margin-bottom:.5em;">
+<em><a href="#hello_includes_1">hello includes</a></em><span class="codedoc">&crarr;</span><br>
+<em><a href="#hello_main_1">hello main</a></em><br>
+</div>
+</div>
+++++
+
+Same as before, file _hello.c_ is generated in filesystem
+containing the result of recursively de-referencing
+(and properly indenting) its chunks:
+
+....
+#include <stdio.h>
+int main() {
+    printf("Hello world!\n");
+    return 0;
+}
+....
+
+There is no requirement as to
+the order by which chunk and file blocks are defined within the document --
+you are free to reference chunks defined later in the document as well,
+if you decide it suits better the explanation flow of your documentation.
+
+Code chunks support a powerful concept in literate programming, namely that
+software programs should be considered works of literature.
+Therefore you cannot properly document software if you are restricted
+to the order imposed by machine understandable entities (like functions and methods)
+in the sense an underlying idea of a given software
+is usually splattered along its code base in several places and files.
+
+From now on in this document, when used indistinctly,
+the work _chunk_ means both code chunks and code files.
+
+=== Chunk Continuation
+
+A given chunk may appear split along an asciidoc document,
+and codedoc will happily consider them as the same unit.
+
+For instance, let's add a complement to the greeting of last chapter:
+
+....
+////
+/greet the world
+printf("It's a beautiful day.\n");
+////
+....
+
+Now we have the following rendering:
+
+.hello includes
+[#hello_includes_2]
+++++
+<div id="hello_includes_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello includes</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">#include &lt;stdio.h&gt;</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_3">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.hello main
+[#hello_main_2]
+++++
+<div id="hello_main_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello main</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">int main() {<span class="codedoc">&crarr;</span></code><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_2">greet the world</a></em><span class="codedoc">&crarr;</span><br>
+<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;<span class="codedoc">&crarr;</span></code><br>
+<code class="codedoc">}</code><br>
+</div>
+<div class="title"><sup>
+Used by: <a href="#hello_c_3">hello.c</a>.
+</sup></div>
+</div>
+++++
+
+.greet the world (1 of 2)
+[#greet_the_world_2]
+++++
+<div id="greet_the_world_2" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">greet the world (1 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">printf("Hello world!\n");</code><br>
+</div>
+<div class="title"><sup>
+Next: <a href="#greet_the_world_3">greet the world (2 of 2)</a>.
+Used by: <a href="#hello_main_2">hello main</a>.
+</sup></div>
+</div>
+++++
+
+.hello.c
+[#hello_c_3]
+++++
+<div id="hello_c_3" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">hello.c</div>
+<div class="content" style="margin-bottom:.5em;">
+<em><a href="#hello_includes_2">hello includes</a></em><span class="codedoc">&crarr;</span><br>
+<em><a href="#hello_main_2">hello main</a></em><br>
+</div>
+</div>
+++++
+
+.greet the world (2 of 2)
+[#greet_the_world_3]
+++++
+<div id="greet_the_world_3" class="exampleblock" style="margin-bottom:1.25em;">
+<div class="title">greet the world (2 of 2)</div>
+<div class="content" style="margin-bottom:.5em;">
+<code class="codedoc">printf("It's a beautiful day.\n");</code><br>
+</div>
+<div class="title"><sup>
+Previous: <a href="#greet_the_world_2">greet the world (1 of 2)</a>.
+Used by: <a href="#hello_main_2">hello main</a>.
+</sup></div>
+</div>
+++++
+
+And the generated hello.c file becomes:
+
+....
+#include <stdio.h>
+int main() {
+    printf("Hello world!\n");
+    printf("It's a beautiful day.\n");
+    return 0;
+}
+....
+
+Continuation of chunks eases all related pieces of source code
+to be gathered into a single place of the software documentation, 
+for then to be explained in a way more palatable to humans.
+
+[quote, Donald Knuth, Introducer of the literate programming paradigm]
+Instead of imagining that our main task is to instruct a computer what to do,
+let us concentrate rather on explaining to human beings what we want a computer to do.
+
+=== Special Directives
+
+Besides code files and code chunks,
+codedoc recognizes the following asciidoc comment blocks.
+
+==== Table of Chunks
+
+Lists all chunks of the document.
+
+....
+////
+///table_of_chunks
+////
+....
+
+Produces something like:
+
+++++
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Chunks</div>
+<ul class="sectlevel1">
+<li><a href="#hello_includes_2">hello includes</a></li>
+<li><a href="#hello_main_2">hello main</a></li>
+<li><a href="#greet_the_world_2">greet the world (1 of 2)</a></li>
+<li><a href="#hello_c_3">hello.c</a></li>
+<li><a href="#greet_the_world_3">greet the world (2 of 2)</a></li>
+<li><a href="#"></a></li>
+</ul>
+</div>
+++++
+
+==== Exploded Code
+
+....
+////
+///exploded_code
+////
+....
+
+Produces:
+
+* A table of code files;
+* One level 3 chapter after each code file containing its full listing with all chunks dereferenced.
+
+Sample:
+
+++++
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Files</div>
+<ul class="sectlevel1">
+<li><a href="#file_hello_c">hello.c</a></li>
+</ul>
+</div>
+++++
+
+[#file_hello_c]
+[discrete]
+=== hello.c
+
+_[small]#Origin chunk: <<hello_c_3>>#_
+
+++++
+<div class="exampleblock" style="margin-bottom:1.25em;">
+<div class="content" style="margin-bottom:.5em;">
+<table class="codedoc">
+<tr class="codedoc"><td id="file_hello_c_line_1" class="codedoc_filelineid">1</td><td class="codedoc_filecontent"><code class="codedoc">#include &lt;stdio.h&gt;</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_includes_2">hello includes</a></em></sub></td></tr>
+<tr class="codedoc"><td id="file_hello_c_line_2" class="codedoc_filelineid">2</td><td class="codedoc_filecontent"><code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
+<tr class="codedoc"><td id="file_hello_c_line_3" class="codedoc_filelineid">3</td><td class="codedoc_filecontent"><code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#greet_the_world_2">greet the world (1 of 2)</a></em></sub></td></tr>
+<tr class="codedoc"><td id="file_hello_c_line_4" class="codedoc_filelineid">4</td><td class="codedoc_filecontent"><code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;printf("It's a beautiful day.\n");</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#greet_the_world_3">greet the world (2 of 2)</a></em></sub></td></tr>
+<tr class="codedoc"><td id="file_hello_c_line_5" class="codedoc_filelineid">5</td><td class="codedoc_filecontent"><code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
+<tr class="codedoc"><td id="file_hello_c_line_6" class="codedoc_filelineid">6</td><td class="codedoc_filecontent"><code class="codedoc">}</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
+</table>
+</div>
+</div>
+++++
+
+Exploded code is fully cross referenced back to provider chunks.
+Also, each line is uniquely anchored, allowing direct links: 
+pass:[<a href="#file_hello_c_line_4">file_hello_c_line_4</a>]
+
+==== Codedoc Include
+
+If codedoc literate style happens to be used
+across multiple asciidoc files in your document,
+they are required to be included through a codedoc include directive
+as the following sample:
+
+....
+////
+///include
+path/to/other/file.adoc
+////
+....
+
+This causes codedoc preprocessor to enable chunk processing in the included file.
+
+=== Miscellaneous
+
+==== Chunk Reference Escape
+
+What if a given literal line of code starts with a single `/`?
+
+....
+////
+//myfile.txt
+/This is a real line of my file that happens to start with a single slash.
+////
+....
+
+The above doesn't work as the line would be handled as a chunk reference.
+As a workaround, inside chubks, codedoc considers any line starting with `//`
+as a literal line of code with the heading `//` replaced by `/`.
+
+So the above chunk is required to be written instead as:
+
+....
+////
+//myfile.txt
+//This is a real line of my file that happens to start with a single slash.
+////
+....
+
+==== Line Break Escape
+
+All chunk interface seen so far is purposely line oriented:
+one cannot place code and chunk references in the same line.
+This is a design choice that simplifies input syntax
+and at the same time hopefully covers the majority of cases in source code production.
+
+It would be awesome however to be able to eventually concatenate chunks and literal code
+in the same line of generated code.
+An extension of chunk naming is provided as a way of achieving such goal.
+
+The extended syntax works by appending a trailing `/` to the chunk reference,
+followed by exactly two further characters that enable
+pre and post continuation of the chunk in the same line.
+
+As usual, an example:
+
+....
+////
+/my chunk
+world
+////
+....
+
+....
+////
+//my_file.txt
+Hello 
+/my chunk/++
+!
+////
+....
+
+Note the `++` in the reference to chunk _my chunk_.
+The first `+` tells codedoc that _my chunk_ is part of the end of the previous line.
+The last `+` tells that _my chunk_ does not break its line at the end,
+causing the next line in sequence to be appended.
+
+The generated file _my_file.txt_ therefore contains:
+
+....
+Hello world!
+....
+
+The counterpart of `+` in the above context is a `.` character,
+meaning the usual line oriented behavior.
+In fact, all chunk references seen so far in the form:
+
+....
+/chunk
+....
+
+are shortcuts to the extended form:
+
+....
+/chunk/..
+....
+
+==== Codedoc Attribute
+
+Asciidoc files generated by codedoc contains the attribute _codedoc_.
+This can be used to deliver conditional content in rendered output
+based on evidence of codedoc processing.
+
+For example, this document has
+ifndef::codedoc[*not*]
+been processed by codedoc.
+
+The above paragraph was coded as:
+
+++++
+<div class="literalblock">
+<div class="content">
+<pre>For example, this document has
+ifndef&#58;:codedoc[*not*]
+been processed by codedoc.</pre>
+</div>
+</div>
+++++
+
+== Known Issues
+
+Codedoc currently supports asciidoctor html backend only.
+
+Codedoc does not recognize asciidoctor `include::` for preprocessing included content;
+use <<Codedoc Include>> directive instead for such purpose.
+
+Codedoc include directive does not support inclusion parameters.
+
+Generated html tested with asciidoctor default style only.
+
+== Installation
+
+...
+
+== Usage
+
+...

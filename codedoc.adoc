@@ -72,7 +72,10 @@ eWEB served as a source of inspiration for Codedoc.
 
 include::user_guide.adoc[]
 
-include::system_specification.adoc[]
+////
+///include
+system_specification.adoc
+////
 
 :sectnums!:
 [appendix]

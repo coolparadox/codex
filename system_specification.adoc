@@ -1,16 +1,225 @@
 = System Specification
 
-[preface]
-== Part 2 Preface
+== Expansion of Codedoc Includes
 
-This part was written because...
+This section implements recursive expansion of <<Codedoc Include>> directives in an
+asciidoc document.
 
-== Chapter 1
+This is performed by *codexpand* tool.
 
-The mud had turned to cement...
+////
+//codexpand.cpp
+/cpp preamble
 
-The hail-and-rainbow protocol can be initiated at five levels: double, tertiary, supernumerary, supermassive, and apocalyptic party.footnote:[The double hail-and-rainbow level makes my toes tingle.]   
-A bold statement!footnoteref:[disclaimer,Opinions are my own.]   
+/codexpand includes
 
-Another outrageous statement.footnoteref:[disclaimer] 
+/codexpand defines
 
+/codexpand declarations
+
+int main(int argc, char* argv[])
+{
+    /codexpand main
+}
+////
+
+_codexpand_ expects the path to an asciidoc file as its only argument.
+
+////
+/codexpand main
+if (argc != 2)
+{
+    /show codexpand usage
+    return 1;
+}
+////
+
+////
+/codexpand includes
+#include <iostream>
+////
+
+////
+/show codexpand usage
+std::cerr << "usage: codexpand <file>" << std::endl;
+////
+
+The gist of codexpand is the _expand_ function,
+that receives the path to an asciidoc file
+and the stack of called paths.
+
+////
+/codexpand includes
+#include <string>
+#include <vector>
+////
+
+////
+/codexpand declarations
+int expand(std::string path, std::vector<std::string> paths);
+////
+
+////
+/codexpand main
+return expand(argv[1], {});
+////
+
+////
+//codexpand.cpp
+
+int expand(std::string path, std::vector<std::string> paths)
+{
+    /codexpand expand
+    return 0;
+}
+////
+
+_expand_ is designed to be recursive and assumes the path stack represents
+the current depth level of the expansion.
+This offers an opportunity to detect expansion loops.
+
+////
+/codexpand includes
+#include <algorithm>
+////
+
+////
+/codexpand expand
+if (std::find(paths.cbegin(), paths.cend(), path) != paths.cend())
+{
+    std::cerr << "codexpand: error: inclusion loop detected: " << path << std::endl;
+    return 1;
+}
+////
+
+Let's access each line of path.
+
+////
+/codexpand includes
+#include <fstream>
+////
+
+////
+/codexpand expand
+/setup fin stream to access lines of path
+while (fin.good())
+{
+    /read line of fin stream
+    /process line read from fin
+}
+/handle fin stream termination
+////
+
+////
+/setup fin stream to access lines of path
+std::ifstream fin;
+fin.open(path, std::ifstream::in);
+////
+
+////
+/read line of fin stream
+std::string line;
+std::getline(fin, line);
+if (!fin.good()) break;
+////
+
+////
+/handle fin stream termination
+if (!fin.eof())
+{
+    std::cerr << "codexpand: error: cannot read '" << path << "'" << std::endl;
+    return 1;
+}
+////
+
+Codedoc include blocks are comment blocks delimited by `////`;
+let's detect these delimiters and keep track of comment block boundaries.
+
+////
+/setup fin stream to access lines of path
+bool inside_comment_block { false };
+////
+
+////
+/codexpand defines
+#define COMMENT_BLOCK_DELIMITER "////"
+////
+
+////
+/process line read from fin
+if (!inside_comment_block && line != COMMENT_BLOCK_DELIMITER)
+{
+    std::cout << line << std::endl;
+    continue;
+}
+else if (!inside_comment_block && line == COMMENT_BLOCK_DELIMITER)
+{
+    inside_comment_block = true;
+    /start comment block acquisition
+}
+else if (inside_comment_block && line != COMMENT_BLOCK_DELIMITER)
+{
+    /append line to comment block acquisition
+}
+else
+{
+    inside_comment_block = false;
+    /end comment block acquisition
+}
+////
+
+Comment blocks are acquired separately, so they can be tested for
+codedoc include blocks.
+
+////
+/setup fin stream to access lines of path
+std::vector<std::string> comment_block;
+////
+
+////
+/start comment block acquisition
+comment_block.clear();
+////
+
+////
+/append line to comment block acquisition
+comment_block.push_back(line);
+////
+
+////
+/end comment block acquisition
+/is comment block a codedoc include?
+{
+    /replace block by inclusion of new file
+    continue;
+}
+/copy block to output
+////
+
+If a comment block is a codedoc include directive,
+recurse for including contents of the new file.
+
+////
+/is comment block a codedoc include?
+if (comment_block.size() == 2 && comment_block[0] == "///include")
+////
+
+////
+/replace block by inclusion of new file
+std::vector<std::string> new_paths { paths };
+new_paths.push_back(path);
+int rcode { expand(comment_block[1], new_paths) };
+if (rcode != 0) return rcode;
+////
+
+Otherwise just dump the comment block.
+
+////
+/copy block to output
+std::cout << COMMENT_BLOCK_DELIMITER << std::endl;
+for (auto it {comment_block.cbegin()}; it != comment_block.cend(); ++it )
+{
+    std::cout << *it << std::endl;
+}
+std::cout << COMMENT_BLOCK_DELIMITER << std::endl;
+////

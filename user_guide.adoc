@@ -538,4 +538,36 @@ Generated html tested with asciidoctor default style only.
 
 == Usage
 
+Codedoc comprises the following command line tools:
+
+codexpand:: Open an asciidoc file and recursively de-references <<Codedoc Include>> directives.
+Outputs a stream of the expanded asciidoc content to standard output.
+codexplain:: Preprocess an asciidoc stream for <<Code Files>> and <<Special Directives>>.
+Outputs a stream of the processed asciidoc content to standard output,
+and a "file bomb" stream with instructions to
+generate files from <<Code Files>> sections to file descriptor 3.
+codexplode:: Parse a file bomb stream and actually write code files to filesystem.
+
+Here is a typical usage diagram:
+
+[graphviz, "codedoc-tools"]
+.... 
+digraph G { 
+    topfile[label="top file\n[asciidoc]", shape=plaintext];
+    includes[label="include files\n[asciidoc]", shape=plaintext];
+    topfile -> codexpand -> expanded;
+    includes -> codexpand;
+    expanded[label="expanded\n[asciidoc]", shape=plaintext];
+    expanded -> codexplain;
+    explained[label="explained\n[asciidoc]", shape=plaintext];
+    codexplain -> explained;
+    bomb[label="file bomb\n[codexplode]", shape=plaintext];
+    codexplain -> bomb;
+    html[label="system\ndocumentation\n[html]", shape=plaintext];
+    explained -> asciidoctor -> html;
+    files[label="source\nfiles", shape=plaintext];
+    bomb -> codexplode -> files;
+} 
+....
+
 ...

@@ -1,4 +1,4 @@
-= Codedoc
+= Codex
 Rafael Lorandi <coolparadox@gmail.com>
 :doctype: book
 :sectnums:
@@ -13,18 +13,18 @@ Remove following style defs when performed by weaving:
 
 ++++
 <style>
-code.codedoc{word-spacing:unset;padding:unset;background-color:unset}
-span.codedoc{opacity:.5}
-table.codedoc{background:unset;border:unset}
-tr:nth-child(even).codedoc{background:unset}
-tr:nth-child(odd).codedoc{background:unset}
-td.codedoc_filelineid{line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em}
-td.codedoc_filecontent{line-height:unset;padding:unset}
-a.codedoc_filechunkref{text-decoration:none;opacity:.5}
+code.codex{word-spacing:unset;padding:unset;background-color:unset}
+span.codex{opacity:.5}
+table.codex{background:unset;border:unset}
+tr:nth-child(even).codex{background:unset}
+tr:nth-child(odd).codex{background:unset}
+td.codex_filelineid{line-height:unset;padding:unset;text-align:right;opacity:.2;padding-right:.5em}
+td.codex_filecontent{line-height:unset;padding:unset}
+a.codex_filechunkref{text-decoration:none;opacity:.5}
 </style>
 ++++
 
-Codedoc is a literate programming tool for asciidoc documentation format.
+Codex is a literate programming tool for asciidoc documentation format.
 
 The literate programming paradigm enforces indirection layers on top of computer source code
 in order to support expression of its logic in ways more suited to human thinking
@@ -42,7 +42,7 @@ Version Date: {revdate}
 
 Version Notes: {revremark}
 
-Codedoc is a literate programming tool for asciidoc documentation format. +
+Codex is a literate programming tool for asciidoc documentation format. +
 Copyright (C) 2018 Rafael Lorandi
 
 This program is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ a tangler that recognizes code chunks embedded in asciidoc listing blocks.
 Since input files to the tangler are already asciidoc compliant documents,
 no weaver is deemed to be necessary.
 
-eWEB served as a source of inspiration for Codedoc.
+eWEB served as a source of inspiration for Codex.
 
 include::user_guide.adoc[]
 

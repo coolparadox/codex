@@ -1,8 +1,8 @@
 = System Specification
 
-== Expansion of Codedoc Includes
+== Expansion of Codex Includes
 
-This section implements recursive expansion of <<Codedoc Include>> directives in an
+This section implements recursive expansion of <<Codex Include>> directives in an
 asciidoc document.
 
 This is performed by *codexpand* tool.
@@ -132,7 +132,7 @@ if (!fin.eof())
 }
 ////
 
-Codedoc include blocks are comment blocks delimited by `////`;
+Codex include blocks are comment blocks delimited by `////`;
 let's detect these delimiters and keep track of comment block boundaries.
 
 ////
@@ -169,7 +169,7 @@ else
 ////
 
 Comment blocks are acquired separately, so they can be tested for
-codedoc include blocks.
+codex include blocks.
 
 ////
 /setup fin stream to access lines of path
@@ -188,7 +188,7 @@ comment_block.push_back(line);
 
 ////
 /end comment block acquisition
-/is comment block a codedoc include?
+/is comment block a codex include?
 {
     /replace block by inclusion of new file
     continue;
@@ -196,11 +196,11 @@ comment_block.push_back(line);
 /copy block to output
 ////
 
-If a comment block is a codedoc include directive,
+If a comment block is a codex include directive,
 recurse for including contents of the new file.
 
 ////
-/is comment block a codedoc include?
+/is comment block a codex include?
 if (comment_block.size() == 2 && comment_block[0] == "///include")
 ////
 

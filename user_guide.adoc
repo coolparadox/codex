@@ -1,10 +1,10 @@
 = User Guide
 
-== Codedoc by Examples
+== Codex by Examples
 
-Codedoc is a preprocessor for asciidoc documentation
+Codex is a preprocessor for asciidoc documentation
 that recognizes asciidoc comment blocks containing predefined content as pieces of source code.
-Codedoc is designed to serve as a tool for literate programming.
+Codex is designed to serve as a tool for literate programming.
 
 This is more easily explained by examples.
 
@@ -31,7 +31,7 @@ Further lines of the block contain the source code of hello.c.
 
 If you process the asciidoc document directly,
 the above block is ignored as `////` delimits a comment block in asciidoc syntax.
-Running *codedoc* instead over the asciidoc document however produces two outcomes:
+Running *codex* instead over the asciidoc document however produces two outcomes:
 
 . A processed version of the asciidoc document that renders this block as:
 footnote:[Only HTML backend is currently supported.]
@@ -42,11 +42,11 @@ footnote:[Only HTML backend is currently supported.]
 <div id="hello_c_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello.c</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">#include &lt;stdio.h&gt;</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">}</code><br>
+<code class="codex">#include &lt;stdio.h&gt;</code><span class="codex">&crarr;</span><br>
+<code class="codex">int main() {</code><span class="codex">&crarr;</span><br>
+<code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span class="codex">&crarr;</span><br>
+<code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codex">&crarr;</span><br>
+<code class="codex">}</code><br>
 </div>
 </div>
 ++++
@@ -109,7 +109,7 @@ printf("Hello world!\n");
 ....
 
 (As you may have guessed,
-codedoc understands a comment block
+codex understands a comment block
 whose first content line contains a single leading `/`
 as a code chunk.)
 
@@ -124,7 +124,7 @@ _hello.c_ could then be defined as the following block of code file:
 ////
 ....
 
-Now *codedoc* generates a processed version of the asciidoc document
+Now *codex* generates a processed version of the asciidoc document
 that renders these blocks as the following:
 
 .hello includes
@@ -133,7 +133,7 @@ that renders these blocks as the following:
 <div id="hello_includes_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello includes</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">#include &lt;stdio.h&gt;</code><br>
+<code class="codex">#include &lt;stdio.h&gt;</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_2">hello.c</a>.
@@ -147,10 +147,10 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 <div id="hello_main_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello main</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_1">greet the world</a></em><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">}</code><br>
+<code class="codex">int main() {</code><span class="codex">&crarr;</span><br>
+<code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_1">greet the world</a></em><span class="codex">&crarr;</span><br>
+<code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codex">&crarr;</span><br>
+<code class="codex">}</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_2">hello.c</a>.
@@ -164,7 +164,7 @@ Used by: <a href="#hello_c_2">hello.c</a>.
 <div id="greet_the_world_1" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">printf("Hello world!\n");</code><br>
+<code class="codex">printf("Hello world!\n");</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_main_1">hello main</a>.
@@ -178,7 +178,7 @@ Used by: <a href="#hello_main_1">hello main</a>.
 <div id="hello_c_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello.c</div>
 <div class="content" style="margin-bottom:.5em;">
-<em><a href="#hello_includes_1">hello includes</a></em><span class="codedoc">&crarr;</span><br>
+<em><a href="#hello_includes_1">hello includes</a></em><span class="codex">&crarr;</span><br>
 <em><a href="#hello_main_1">hello main</a></em><br>
 </div>
 </div>
@@ -214,7 +214,7 @@ the work _chunk_ means both code chunks and code files.
 === Chunk Continuation
 
 A given chunk may appear split along an asciidoc document,
-and codedoc will happily consider them as the same unit.
+and codex will happily consider them as the same unit.
 
 For instance, let's add a complement to the greeting of last chapter:
 
@@ -233,7 +233,7 @@ Now we have the following rendering:
 <div id="hello_includes_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello includes</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">#include &lt;stdio.h&gt;</code><br>
+<code class="codex">#include &lt;stdio.h&gt;</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_3">hello.c</a>.
@@ -247,10 +247,10 @@ Used by: <a href="#hello_c_3">hello.c</a>.
 <div id="hello_main_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello main</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">int main() {<span class="codedoc">&crarr;</span></code><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_2">greet the world</a></em><span class="codedoc">&crarr;</span><br>
-<code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;<span class="codedoc">&crarr;</span></code><br>
-<code class="codedoc">}</code><br>
+<code class="codex">int main() {<span class="codex">&crarr;</span></code><br>
+<code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;</code><em><a href="#greet_the_world_2">greet the world</a></em><span class="codex">&crarr;</span><br>
+<code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;return 0;<span class="codex">&crarr;</span></code><br>
+<code class="codex">}</code><br>
 </div>
 <div class="title"><sup>
 Used by: <a href="#hello_c_3">hello.c</a>.
@@ -264,7 +264,7 @@ Used by: <a href="#hello_c_3">hello.c</a>.
 <div id="greet_the_world_2" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world (1 of 2)</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">printf("Hello world!\n");</code><br>
+<code class="codex">printf("Hello world!\n");</code><br>
 </div>
 <div class="title"><sup>
 Next: <a href="#greet_the_world_3">greet the world (2 of 2)</a>.
@@ -279,7 +279,7 @@ Used by: <a href="#hello_main_2">hello main</a>.
 <div id="hello_c_3" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">hello.c</div>
 <div class="content" style="margin-bottom:.5em;">
-<em><a href="#hello_includes_2">hello includes</a></em><span class="codedoc">&crarr;</span><br>
+<em><a href="#hello_includes_2">hello includes</a></em><span class="codex">&crarr;</span><br>
 <em><a href="#hello_main_2">hello main</a></em><br>
 </div>
 </div>
@@ -291,7 +291,7 @@ Used by: <a href="#hello_main_2">hello main</a>.
 <div id="greet_the_world_3" class="exampleblock" style="margin-bottom:1.25em;">
 <div class="title">greet the world (2 of 2)</div>
 <div class="content" style="margin-bottom:.5em;">
-<code class="codedoc">printf("It's a beautiful day.\n");</code><br>
+<code class="codex">printf("It's a beautiful day.\n");</code><br>
 </div>
 <div class="title"><sup>
 Previous: <a href="#greet_the_world_2">greet the world (1 of 2)</a>.
@@ -322,7 +322,7 @@ let us concentrate rather on explaining to human beings what we want a computer 
 === Special Directives
 
 Besides code files and code chunks,
-codedoc recognizes the following asciidoc comment blocks.
+codex recognizes the following asciidoc comment blocks.
 
 ==== Table of Chunks
 
@@ -383,13 +383,13 @@ _[small]#Origin chunk: <<hello_c_3>>#_
 ++++
 <div class="exampleblock" style="margin-bottom:1.25em;">
 <div class="content" style="margin-bottom:.5em;">
-<table class="codedoc">
-<tr class="codedoc"><td id="file_hello_c_line_1" class="codedoc_filelineid">1</td><td class="codedoc_filecontent"><code class="codedoc">#include &lt;stdio.h&gt;</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_includes_2">hello includes</a></em></sub></td></tr>
-<tr class="codedoc"><td id="file_hello_c_line_2" class="codedoc_filelineid">2</td><td class="codedoc_filecontent"><code class="codedoc">int main() {</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
-<tr class="codedoc"><td id="file_hello_c_line_3" class="codedoc_filelineid">3</td><td class="codedoc_filecontent"><code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#greet_the_world_2">greet the world (1 of 2)</a></em></sub></td></tr>
-<tr class="codedoc"><td id="file_hello_c_line_4" class="codedoc_filelineid">4</td><td class="codedoc_filecontent"><code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;printf("It's a beautiful day.\n");</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#greet_the_world_3">greet the world (2 of 2)</a></em></sub></td></tr>
-<tr class="codedoc"><td id="file_hello_c_line_5" class="codedoc_filelineid">5</td><td class="codedoc_filecontent"><code class="codedoc">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
-<tr class="codedoc"><td id="file_hello_c_line_6" class="codedoc_filelineid">6</td><td class="codedoc_filecontent"><code class="codedoc">}</code><span class="codedoc">&crarr;</span>&nbsp;<sub><em><a class="codedoc_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
+<table class="codex">
+<tr class="codex"><td id="file_hello_c_line_1" class="codex_filelineid">1</td><td class="codex_filecontent"><code class="codex">#include &lt;stdio.h&gt;</code><span class="codex">&crarr;</span>&nbsp;<sub><em><a class="codex_filechunkref" href="#hello_includes_2">hello includes</a></em></sub></td></tr>
+<tr class="codex"><td id="file_hello_c_line_2" class="codex_filelineid">2</td><td class="codex_filecontent"><code class="codex">int main() {</code><span class="codex">&crarr;</span>&nbsp;<sub><em><a class="codex_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
+<tr class="codex"><td id="file_hello_c_line_3" class="codex_filelineid">3</td><td class="codex_filecontent"><code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello world!\n");</code><span class="codex">&crarr;</span>&nbsp;<sub><em><a class="codex_filechunkref" href="#greet_the_world_2">greet the world (1 of 2)</a></em></sub></td></tr>
+<tr class="codex"><td id="file_hello_c_line_4" class="codex_filelineid">4</td><td class="codex_filecontent"><code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;printf("It's a beautiful day.\n");</code><span class="codex">&crarr;</span>&nbsp;<sub><em><a class="codex_filechunkref" href="#greet_the_world_3">greet the world (2 of 2)</a></em></sub></td></tr>
+<tr class="codex"><td id="file_hello_c_line_5" class="codex_filelineid">5</td><td class="codex_filecontent"><code class="codex">&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><span class="codex">&crarr;</span>&nbsp;<sub><em><a class="codex_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
+<tr class="codex"><td id="file_hello_c_line_6" class="codex_filelineid">6</td><td class="codex_filecontent"><code class="codex">}</code><span class="codex">&crarr;</span>&nbsp;<sub><em><a class="codex_filechunkref" href="#hello_main_2">hello main</a></em></sub></td></tr>
 </table>
 </div>
 </div>
@@ -399,11 +399,11 @@ Exploded code is fully cross referenced back to provider chunks.
 Also, each line is uniquely anchored, allowing direct links: 
 pass:[<a href="#file_hello_c_line_4">file_hello_c_line_4</a>]
 
-==== Codedoc Include
+==== Codex Include
 
-If codedoc literate style happens to be used
+If codex literate style happens to be used
 across multiple asciidoc files in your document,
-they are required to be included through a codedoc include directive
+they are required to be included through a codex include directive
 as the following sample:
 
 ....
@@ -413,7 +413,7 @@ path/to/other/file.adoc
 ////
 ....
 
-This causes codedoc preprocessor to enable chunk processing in the included file.
+This causes codex preprocessor to enable chunk processing in the included file.
 
 === Miscellaneous
 
@@ -429,7 +429,7 @@ What if a given literal line of code starts with a single `/`?
 ....
 
 The above doesn't work as the line would be handled as a chunk reference.
-As a workaround, inside chubks, codedoc considers any line starting with `//`
+As a workaround, inside chubks, codex considers any line starting with `//`
 as a literal line of code with the heading `//` replaced by `/`.
 
 So the above chunk is required to be written instead as:
@@ -475,7 +475,7 @@ Hello
 ....
 
 Note the `++` in the reference to chunk _my chunk_.
-The first `+` tells codedoc that _my chunk_ is part of the end of the previous line.
+The first `+` tells codex that _my chunk_ is part of the end of the previous line.
 The last `+` tells that _my chunk_ does not break its line at the end,
 causing the next line in sequence to be appended.
 
@@ -499,15 +499,15 @@ are shortcuts to the extended form:
 /chunk/..
 ....
 
-==== Codedoc Attribute
+==== Codex Attribute
 
-Asciidoc files generated by codedoc contains the attribute _codedoc_.
+Asciidoc files generated by codex contains the attribute _codex_.
 This can be used to deliver conditional content in rendered output
-based on evidence of codedoc processing.
+based on evidence of codex processing.
 
 For example, this document has
-ifndef::codedoc[*not*]
-been processed by codedoc.
+ifndef::codex[*not*]
+been processed by codex.
 
 The above paragraph was coded as:
 
@@ -515,20 +515,20 @@ The above paragraph was coded as:
 <div class="literalblock">
 <div class="content">
 <pre>For example, this document has
-ifndef&#58;:codedoc[*not*]
-been processed by codedoc.</pre>
+ifndef&#58;:codex[*not*]
+been processed by codex.</pre>
 </div>
 </div>
 ++++
 
 == Known Issues
 
-Codedoc currently supports asciidoctor html backend only.
+Codex currently supports asciidoctor html backend only.
 
-Codedoc does not recognize asciidoctor `include::` for preprocessing included content;
-use <<Codedoc Include>> directive instead for such purpose.
+Codex does not recognize asciidoctor `include::` for preprocessing included content;
+use <<Codex Include>> directive instead for such purpose.
 
-Codedoc include directive does not support inclusion parameters.
+Codex include directive does not support inclusion parameters.
 
 Generated html tested with asciidoctor default style only.
 
@@ -538,9 +538,9 @@ Generated html tested with asciidoctor default style only.
 
 == Usage
 
-Codedoc comprises the following command line tools:
+Codex comprises the following command line tools:
 
-codexpand:: Open an asciidoc file and recursively de-references <<Codedoc Include>> directives.
+codexpand:: Open an asciidoc file and recursively de-references <<Codex Include>> directives.
 Outputs a stream of the expanded asciidoc content to standard output.
 codexplain:: Preprocess an asciidoc stream for <<Code Files>> and <<Special Directives>>.
 Outputs a stream of the processed asciidoc content to standard output,
@@ -550,7 +550,7 @@ codexplode:: Parse a file bomb stream and actually write code files to filesyste
 
 Here is a typical usage diagram:
 
-[graphviz, "codedoc-tools"]
+[graphviz, "codex-tools"]
 .... 
 digraph G { 
     topfile[label="top file\n[asciidoc]", shape=plaintext];

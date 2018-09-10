@@ -43,11 +43,11 @@ for TARGET in 'codexpand' ; do
 done
 popd 1>/dev/null
 
-./src/codexpand codedoc.adoc | \
+./src/codexpand codex.adoc | \
 asciidoctor \
     -r asciidoctor-diagram \
     --backend html5 \
     --failure-level WARN \
     --verbose \
-    - 1>codedoc.html 
-file codedoc.html
+    - 1>codex.html 
+file codex.html

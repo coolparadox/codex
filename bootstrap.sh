@@ -28,7 +28,7 @@ tangle() {
                 echo $LINE
                 ;;
         esac
-    done 0<system_specification.adoc
+    done 0<expansion_of_codex_includes.adoc
 }
 
 mkdir -p src

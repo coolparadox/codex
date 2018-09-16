@@ -319,6 +319,9 @@ for then to be explained in a way more palatable to humans.
 Instead of imagining that our main task is to instruct a computer what to do,
 let us concentrate rather on explaining to human beings what we want a computer to do.
 
+NOTE: The default chunk continuation behavior can be selectively disabled
+by the <<Chunk Reset>> special directive.
+
 === Special Directives
 
 Besides code files and code chunks,
@@ -415,6 +418,28 @@ path/to/other/file.adoc
 
 This causes codex preprocessor to enable chunk processing in the included file.
 
+==== Chunk Reset
+
+By default _codex_ joins all chunks of the same name as one single chunk.
+Eventually one may wish to reuse a chunk name with a new definition however.
+
+This can be achieved with the reset directive.
+For instance, to reset the definition of chunks _my chunk_ and _my other chunk_,
+issue the following in the document:
+
+....
+////
+///reset
+/my chunk
+/my other chunk
+////
+....
+
+From now on in the document,
+both chunks are now empty,
+allowing new definitions to take place.
+Also, references to them are dereferenced to the new versions.
+
 === Miscellaneous
 
 ==== Chunk Reference Escape
@@ -450,7 +475,7 @@ and at the same time hopefully covers the majority of cases in source code produ
 
 It would be awesome however to be able to eventually concatenate chunks and literal code
 in the same line of generated code.
-An extension of chunk naming is provided as a way of achieving such goal.
+An extension of chunk referencing is provided as a way of achieving such goal.
 
 The extended syntax works by appending a trailing `/` to the chunk reference,
 followed by exactly two further characters that enable
@@ -567,6 +592,65 @@ digraph G {
     explained -> asciidoctor -> html;
     files[label="source\nfiles", shape=plaintext];
     bomb -> codexplode -> files;
+} 
+....
+
+[graphviz, "codex-tools2"]
+.... 
+digraph G { 
+    topfile[label="codex topfile\n[asciidoc]", shape=plaintext];
+    includes[label="codex includes\n[asciidoc]", shape=plaintext];
+    topfile -> codexpand;
+    includes -> codexpand;
+    merged[label="codex merged\n[asciidoc]", shape=plaintext];
+    codexpand -> merged;
+    merged -> codextrude;
+    tree[label="codex\ntree", shape=plaintext];
+    codextrude -> tree;
+    tree -> codexplain;
+    documentation[label="system\ndocumentation\n[asciidoc]", shape=plaintext];
+    codexplain -> documentation;
+    tree -> codexplode;
+    code[label="source code\nfiles", shape=plaintext];
+    codexplode -> code;
+} 
+....
+
+[graphviz, "codex-tools3"]
+.... 
+digraph G { 
+    topfile[label="codex topfile\n[asciidoc]", shape=plaintext];
+    includes[label="codex includes\n[asciidoc]", shape=plaintext];
+    topfile -> codex;
+    includes -> codex;
+    documentation[label="system\ndocumentation\n[asciidoc]", shape=plaintext];
+    codex -> documentation;
+    code[label="source code\nfiles", shape=plaintext];
+    codex -> code;
+} 
+....
+
+[graphviz, "codex-tools3"]
+.... 
+digraph G { 
+    topfile[label="codex topfile\n[asciidoc]", shape=plaintext];
+    includes[label="codex includes\n[asciidoc]", shape=plaintext];
+    topfile -> codexpand;
+    includes -> codexpand;
+    expanded[label="codex stream\n[asciidoc]", shape=plaintext];
+    expanded -> codexplain;
+    explained[label="doc stream\n[asciidoc]", shape=plaintext];
+    codexplain -> explained;
+    explained -> asciidoctor;
+    documentation[label="system book\n[html]", shape=plaintext];
+    asciidoctor -> documentation;
+    codexpand -> expanded;
+    expanded -> codextrude;
+    extruded[label="code stream\n[codexplode]", shape=plaintext];
+    codextrude -> extruded;
+    extruded -> codexplode;
+    sources[label="source code\nin filesystem", shape=plaintext];
+    codexplode -> sources;
 } 
 ....
 

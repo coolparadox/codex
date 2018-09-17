@@ -1,4 +1,4 @@
-== Expansion of Codex Includes
+== Codex Expansion
 
 This section implements recursive expansion of <<Codex Include>> directives in an
 asciidoc document.
@@ -44,7 +44,8 @@ std::cerr << "usage: codexpand <file>" << std::endl;
 
 The gist of codexpand is the _expand_ function,
 that receives the path to an asciidoc file
-and the stack of called paths.
+as parameter _path_,
+and the stack of called paths as parameter _paths_.
 
 ////
 /codexpand includes
@@ -98,15 +99,23 @@ Let's access each line of input.
 ////
 
 ////
+///reset
+/setup stream 'fin' for reading file 'path'
+/read 'line' from 'fin'
+/expand 'line'
+/handle 'fin' termination
+////
+
+////
 /codexpand expand
 /expand declarations
 /setup stream 'fin' for reading file 'path'
 while (fin.good())
 {
-    /read line of 'fin' stream
-    /expand line read from 'fin'
+    /read 'line' from 'fin'
+    /expand 'line'
 }
-/handle 'fin' stream termination
+/handle 'fin' termination
 ////
 
 ////
@@ -116,14 +125,14 @@ fin.open(path, std::ifstream::in);
 ////
 
 ////
-/read line of 'fin' stream
+/read 'line' from 'fin'
 std::string line;
 std::getline(fin, line);
 if (!fin.good()) break;
 ////
 
 ////
-/handle 'fin' stream termination
+/handle 'fin' termination
 if (!fin.eof())
 {
     std::cerr << "codexpand: error: cannot read '" << path << "'" << std::endl;
@@ -145,7 +154,14 @@ bool inside_comment_block { false };
 ////
 
 ////
-/expand line read from 'fin'
+///reset
+/start comment block expansion
+/append line to comment block expansion
+/end comment block expansion
+////
+
+////
+/expand 'line'
 if (!inside_comment_block && line != COMMENT_BLOCK_DELIMITER)
 {
     std::cout << line << std::endl;
@@ -183,6 +199,14 @@ comment_block.clear();
 ////
 /append line to comment block expansion
 comment_block.push_back(line);
+////
+
+////
+///reset
+/is comment block a codex include?
+/replace block by inclusion of new file
+/copy block to output
+
 ////
 
 ////

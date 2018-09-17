@@ -1,0 +1,107 @@
+== Codex Explanation
+
+"`Explanation`" here means to take the (asciidoc) output from <<Codex Expansion>>
+and produce:
+
+. Asciidoc output with _codex_ blocks replaced by content suited for printing;
+. Instructions for generating code files in filesystem (to be processed by <<Codex Extrusion>>).
+
+This is the heavy lifting of _codex_ processing,
+and is performed by *codexplain* tool.
+
+////
+//codexplain.cpp
+/cpp preamble
+
+/codexplain includes
+
+/codexplain defines
+
+/codexplain declarations
+
+int main(int argc)
+{
+    /codexplain main
+}
+////
+
+_codexplain_ is designed as a stream processor:
+
+* input is read from file descriptor 0,
+* explained asciidoc is sent to file descriptor 1,
+* error messages are sent to file descriptor 2,
+* and extrusion commands are sent to file descriptor 3.
+
+////
+///reset
+/main declarations
+////
+
+////
+/codexplain main
+/main declarations
+if (argc != 1)
+{
+    /show codexplain usage
+    return 1;
+}
+////
+
+////
+/codexplain includes
+#include <iostream>
+////
+
+////
+/show codexplain usage
+std::cerr << "usage: codexplain 0<expansion 1>explaination 3>extrusion" << std::endl;
+////
+
+=== Parsing of Expanded Content
+
+Since _codex_ chunks are allowed to be defined after they are referenced,
+there is no way of producing explained content on the fly with
+consumption of input.
+We need to parse all expanded input prior to start generating fully cross-referenced
+pretty printed chunks.
+
+////
+/codexplain includes
+#include <string>
+////
+
+////
+///reset
+/read 'line' from input
+/parse 'line'
+/handle end of input
+////
+
+////
+/codexplain main
+while (std::cin.good())
+{
+    /read 'line' from input
+    /parse 'line'
+}
+/handle end of input
+////
+
+////
+/read 'line' from input
+std::string line;
+std::getline(std::cin, line);
+if (!std::cin.good()) break;
+////
+
+////
+/handle end of input
+if (!std::cin.eof())
+{
+    std::cerr << "codexplain: error: cannot read standard input" << std::endl;
+    return 1;
+}
+////
+
+
+...

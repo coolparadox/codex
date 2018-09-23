@@ -16,21 +16,20 @@ and is performed by *codexplain* tool.
 /codexplain includes
 
 /codexplain defines
-
 /codexplain declarations
 
-int main(int argc)
+int main(int argc, char* argv[])
 {
     /codexplain main
 }
 ////
 
-_codexplain_ is designed as a stream processor:
+_Codexplain_ is designed as a stream processor:
 
-* input is read from file descriptor 0,
-* explained asciidoc is sent to file descriptor 1,
-* error messages are sent to file descriptor 2,
-* and extrusion commands are sent to file descriptor 3.
+* input is read from file descriptor 0;
+* explained asciidoc is sent to file descriptor 1;
+* error messages are sent to file descriptor 2;
+* extrusion commands are sent to file descriptor 3.
 
 ////
 ///reset
@@ -48,27 +47,67 @@ if (argc != 1)
 ////
 
 ////
-/codexplain includes
-#include <iostream>
-////
-
-////
 /show codexplain usage
 std::cerr << "usage: codexplain 0<expansion 1>explaination 3>extrusion" << std::endl;
 ////
 
-=== Parsing of Expanded Content
-
-Since _codex_ chunks are allowed to be defined after they are referenced,
-there is no way of producing explained content on the fly with
-consumption of input.
-We need to parse all expanded input prior to start generating fully cross-referenced
-pretty printed chunks.
-
 ////
 /codexplain includes
-#include <string>
+#include <iostream>
 ////
+
+Let's keep file descriptor 3 open for writing;
+accessible by C stream _ext_ (after "`extrusion`").
+
+////
+/main declarations
+FILE* ext;
+////
+
+////
+/codexplain main
+ext = fdopen(3, "w");
+if (!ext)
+{
+    std::cerr << "error: cannot open file descriptor 3 for writing." << std::endl;
+    return 1;
+}
+////
+
+////
+codexplain includes
+#include <cstdio>
+////
+
+
+=== Overall Strategy 
+
+_Codex_ features like
+definition of chunks after they are referenced (see <<Code Chunks>>)
+and generation of total counts for continued chunks (see <<Chunk Continuation>>)
+require parsing of all input prior to generation of output.
+
+Let's define variable _document_ as the keeper of all parsed content.
+
+////
+/main declarations
+Document document;
+////
+
+////
+/codexplain declarations
+
+struct Document;
+/codexplain support types
+
+struct Document
+{
+    /Document fields
+};
+////
+
+The overall strategy is then:
+first, parse all input into _document_.
 
 ////
 ///reset
@@ -103,5 +142,135 @@ if (!std::cin.eof())
 }
 ////
 
+////
+/codexplain includes
+#include <string>
+////
 
-...
+Second, produce output from _document_ contents.
+
+////
+/codexplain main
+/for each 'element' of 'document'
+{
+    /explain 'element'
+    /if 'element' is a code file
+    {
+        /extrude 'element'
+    }
+}
+////
+
+And we're done.
+
+////
+/codexplain main
+return 0;
+////
+
+==== Recognition of Comment Blocks
+
+As codex blocks are special asciidoc comment blocks delimited by `////`,
+let's detect these delimiters and keep track of comment block boundaries.
+
+////
+/main declarations
+bool inside_comment_block { false };
+////
+
+////
+/codexplain defines
+#define COMMENT_BLOCK_DELIMITER "////"
+////
+
+////
+/parse 'line'
+if (!inside_comment_block && line != COMMENT_BLOCK_DELIMITER)
+{
+    /acquire 'line' as asciidoc content
+}
+else if (!inside_comment_block && line == COMMENT_BLOCK_DELIMITER)
+{
+    inside_comment_block = true;
+    /start comment block acquisition
+}
+else if (inside_comment_block && line != COMMENT_BLOCK_DELIMITER)
+{
+    /acquire 'line' as comment block content
+}
+else
+{
+    inside_comment_block = false;
+    /parse comment block
+}
+////
+
+=== Codex Elements
+
+_CodexElement_ abstract class is the base class for parsed elements.
+
+////
+/codexplain support types
+/CodexElement support types
+
+class CodexElement
+{
+ public:
+    /CodexElement methods
+};
+////
+
+////
+/Document fields
+std::vector<CodexElement*> elements;
+////
+
+////
+/codexplain includes
+#include <vector>
+////
+
+Method _explain_ of _CodexElement_ outputs printable content about itself
+to file descriptor 1.
+This method receives the parsed document for eventual queries.
+
+////
+/CodexElement methods
+virtual void explain(const Document* document) = 0;
+////
+
+Method _extrude_ of _CodexElement_ outputs file generation instructions
+to file descriptor 3.
+Likewise, this method receives the parsed document for eventual queries.
+
+////
+/CodexElement methods
+virtual void extrude(const Document* document, ExtrusionParameters parameters) = 0;
+////
+
+////
+/CodexElement support types
+
+struct ExtrusionParameters
+{
+    /ExtrusionParameters fields
+};
+////
+
+References to chunks may contain indentation that affects all referenced content
+when producing code files (see example in <<Code Chunks>>).
+
+////
+/ExtrusionParameters fields
+std::string prefix;
+////
+
+They also tell if the referenced chunk must attach itself to the previous and/or
+next lines (see <<Line Break Escape>>).
+
+////
+/ExtrusionParameters fields
+bool break_line_before { true };
+bool break_line_after { true };
+////
+

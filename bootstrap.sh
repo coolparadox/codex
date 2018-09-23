@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e -u -o pipefail
 
-tangle() {
+extrude() {
+    local TARGET_CHUNK=$1
+    local CODEX_FILE=$2
     local INSIDE_LITERAL=0
     local CURRENT_CHUNK=''
     while read LINE ; do
@@ -19,30 +21,22 @@ tangle() {
             CURRENT_CHUNK=$LINE
             continue
         }
-        test "$CURRENT_CHUNK" = "$1" || continue
+        test "$CURRENT_CHUNK" = "$TARGET_CHUNK" || continue
         case $LINE in
             /*)
-                tangle "$LINE"
+                extrude "$LINE" "$CODEX_FILE"
                 ;;
             *)
                 echo $LINE
                 ;;
         esac
-    done 0<codex_expansion.adoc
+    done 0<$CODEX_FILE
 }
 
 mkdir -p src
-for FILE in 'codexpand.cpp' ; do
-    TARGET=src/$FILE
-    tangle "//$FILE" 1>$TARGET
-done
 
-pushd src 1>/dev/null
-for TARGET in 'codexpand' ; do
-    g++ -Wall -o $TARGET ${TARGET}.cpp
-done
-popd 1>/dev/null
-
+extrude '//codexpand.cpp' codex_expansion.adoc 1>src/codexpand.cpp
+( cd src && g++ -Wall -o codexpand codexpand.cpp )
 ./src/codexpand codex.adoc | \
 asciidoctor \
     -r asciidoctor-diagram \
@@ -51,3 +45,6 @@ asciidoctor \
     --verbose \
     - 1>codex.html 
 file codex.html
+
+extrude '//codexplain.cpp' codex_explanation.adoc 1>src/codexplain.cpp
+( cd src && g++ -Wall -o codexplain codexplain.cpp )

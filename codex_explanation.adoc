@@ -151,6 +151,7 @@ Second, produce output from _document_ contents.
 
 ////
 /codexplain main
+/sanity check 'document'
 /for each 'element' of 'document'
 {
     /explain 'element'
@@ -201,7 +202,7 @@ else if (inside_comment_block && line != COMMENT_BLOCK_DELIMITER)
 else
 {
     inside_comment_block = false;
-    /parse comment block
+    /end comment block acquisition
 }
 ////
 
@@ -230,6 +231,11 @@ std::vector<CodexElement*> elements;
 #include <vector>
 ////
 
+////
+/for each 'element' of 'document'
+for (CodexElement* element: document.elements)
+////
+
 Method _explain_ of _CodexElement_ outputs printable content about itself
 to file descriptor 1.
 This method receives the parsed document for eventual queries.
@@ -239,6 +245,11 @@ This method receives the parsed document for eventual queries.
 virtual void explain(const Document* document) = 0;
 ////
 
+////
+/explain 'element'
+element->explain(&document);
+////
+
 Method _extrude_ of _CodexElement_ outputs file generation instructions
 to file descriptor 3.
 Likewise, this method receives the parsed document for eventual queries.
@@ -246,6 +257,11 @@ Likewise, this method receives the parsed document for eventual queries.
 ////
 /CodexElement methods
 virtual void extrude(const Document* document, ExtrusionParameters parameters) = 0;
+////
+
+////
+/extrude 'element'
+element->extrude(&document, {});
 ////
 
 ////
@@ -272,5 +288,72 @@ next lines (see <<Line Break Escape>>).
 /ExtrusionParameters fields
 bool break_line_before { true };
 bool break_line_after { true };
+////
+
+==== Asciidoc Line
+
+Representation of a line of asciidoc raw input.
+
+////
+/codexplain support types
+
+class AsciidocLine : public CodexElement
+{
+ public:
+    /AsciidocLine constructor
+    /AsciidocLine explain override
+    /AsciidocLine extrude override
+ private:
+    /AsciidocLine fields
+};
+////
+
+_AsciidocLine_ holds a single line of raw asciidoc input.
+
+////
+/AsciidocLine fields
+std::string line_;
+////
+
+////
+/AsciidocLine constructor
+AsciidocLine(const std::string& line)
+        : line_(line)
+{
+}
+////
+
+////
+/acquire 'line' as asciidoc content
+document.elements.push_back(new AsciidocLine(line));
+////
+
+Explanation of raw asciidoc is straightforward -- just copy to output.
+
+////
+/AsciidocLine explain override
+/explain method override introduction
+{
+    std::cout << line_ << std::endl;
+}
+////
+
+////
+/explain method override introduction
+virtual void explain(const Document* document) override
+////
+
+Extrusion of raw asciidoc is nonsense.
+
+////
+/AsciidocLine extrude override
+/extrude method override introduction
+{
+}
+////
+
+////
+/extrude method override introduction
+virtual void extrude(const Document* document, ExtrusionParameters parameters) override
 ////
 

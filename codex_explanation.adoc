@@ -317,7 +317,7 @@ std::string line_;
 
 ////
 /AsciidocLine constructor
-AsciidocLine(const std::string& line)
+explicit AsciidocLine(const std::string& line)
         : line_(line)
 {
 }
@@ -332,14 +332,14 @@ Explanation of raw asciidoc is straightforward -- just copy to output.
 
 ////
 /AsciidocLine explain override
-/explain method override introduction
+/introduce explain method override
 {
     std::cout << line_ << std::endl;
 }
 ////
 
 ////
-/explain method override introduction
+/introduce explain method override
 virtual void explain(const Document* document) override
 ////
 
@@ -347,13 +347,107 @@ Extrusion of raw asciidoc is nonsense.
 
 ////
 /AsciidocLine extrude override
-/extrude method override introduction
+/introduce extrude method override
 {
 }
 ////
 
 ////
-/extrude method override introduction
+/introduce extrude method override
 virtual void extrude(const Document* document, ExtrusionParameters parameters) override
+////
+
+==== Comment Block
+
+_CommentBlock_ represents an asciidoc comment block delimited by `////`.
+
+////
+/codexplain support types
+
+class CommentBlock : public CodexElement
+{
+ public:
+    /CommentBlock constructor
+    /CommentBlock explain override
+    /CommentBlock extrude override
+ private:
+    /CommentBlock fields
+};
+////
+
+_CommentBlock_ stores all lines inside the represented comment block.
+
+////
+/CommentBlock fields
+std::vector<std::string> lines_;
+////
+
+////
+/CommentBlock constructor
+explicit CommentBlock(const std::vector<std::string>& lines)
+        : lines_(lines)
+{
+}
+////
+
+////
+/main declarations
+std::vector<std::string> comment_lines;
+////
+
+////
+/start comment block acquisition
+comment_lines.clear();
+////
+
+////
+/acquire 'line' as comment block content
+comment_lines.push_back(line);
+////
+
+Other types of codex elements may be disguised as comment blocks.
+
+////
+/end comment block acquisition
+parse_comment_block(document, comment_lines);
+////
+
+////
+/codexplain declarations
+void parse_comment_block(Document& document, const std::vector<std::string> lines);
+////
+
+////
+//codexplain.cpp
+
+void parse_comment_block(Document& document, const std::vector<std::string> lines)
+{
+    /parse comment block
+    document.elements.push_back(new CommentBlock(lines));
+}
+////
+
+Comment blocks are explained by themselves.
+
+////
+/CommentBlock explain override
+/introduce explain method override
+{
+    std::cout << COMMENT_BLOCK_DELIMITER << std::endl;
+    for (std::string line: lines_)
+    {
+        std::cout << line << std::endl;
+    }
+    std::cout << COMMENT_BLOCK_DELIMITER << std::endl;
+}
+////
+
+Extrusion of comment blocks is nonsense.
+
+////
+/CommentBlock extrude override
+/introduce extrude method override
+{
+}
 ////
 

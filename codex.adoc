@@ -6,6 +6,13 @@ Rafael Lorandi <coolparadox@gmail.com>
 :revnumber: 0.0
 :revdate: 09-08-2018
 :revremark: Scratching phase
+////
+///codex
+////
+
+////
+///style
+////
 
 ////
 Remove following style defs when performed by weaving:

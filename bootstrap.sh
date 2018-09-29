@@ -27,7 +27,7 @@ extrude() {
                 extrude "$LINE" "$CODEX_FILE"
                 ;;
             *)
-                echo $LINE
+                echo "$LINE"
                 ;;
         esac
     done 0<$CODEX_FILE

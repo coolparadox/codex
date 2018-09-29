@@ -47,17 +47,22 @@ if (argc != 1)
 ////
 
 ////
-/show codexplain usage
-std::cerr << "usage: codexplain 0<expansion 1>explaination 3>extrusion" << std::endl;
-////
-
-////
 /codexplain includes
 #include <iostream>
 ////
 
+////
+/show codexplain usage
+std::cerr << "usage: codexplain 0<expansion 1>explanation 3>extrusion" << std::endl;
+////
+
 Let's keep file descriptor 3 open for writing;
 accessible by C stream _ext_ (after "`extrusion`").
+
+////
+codexplain includes
+#include <cstdio>
+////
 
 ////
 /main declarations
@@ -72,11 +77,6 @@ if (!ext)
     std::cerr << "error: cannot open file descriptor 3 for writing." << std::endl;
     return 1;
 }
-////
-
-////
-codexplain includes
-#include <cstdio>
 ////
 
 
@@ -127,6 +127,11 @@ while (std::cin.good())
 ////
 
 ////
+/codexplain includes
+#include <string>
+////
+
+////
 /read 'line' from input
 std::string line;
 std::getline(std::cin, line);
@@ -142,16 +147,12 @@ if (!std::cin.eof())
 }
 ////
 
-////
-/codexplain includes
-#include <string>
-////
-
 Second, produce output from _document_ contents.
 
 ////
 /codexplain main
 /sanity check 'document'
+/initialize output
 /for each 'element' of 'document'
 {
     /explain 'element'
@@ -222,13 +223,13 @@ class CodexElement
 ////
 
 ////
-/Document fields
-std::vector<CodexElement*> elements;
+/codexplain includes
+#include <vector>
 ////
 
 ////
-/codexplain includes
-#include <vector>
+/Document fields
+std::vector<CodexElement*> elements;
 ////
 
 ////
@@ -302,7 +303,7 @@ class AsciidocLine : public CodexElement
  public:
     /AsciidocLine constructor
     /AsciidocLine explain override
-    /AsciidocLine extrude override
+    /extrude empty override
  private:
     /AsciidocLine fields
 };
@@ -346,7 +347,7 @@ virtual void explain(const Document* document) override
 Extrusion of raw asciidoc is nonsense.
 
 ////
-/AsciidocLine extrude override
+/extrude empty override
 /introduce extrude method override
 {
 }
@@ -369,7 +370,7 @@ class CommentBlock : public CodexElement
  public:
     /CommentBlock constructor
     /CommentBlock explain override
-    /CommentBlock extrude override
+    /extrude empty override
  private:
     /CommentBlock fields
 };
@@ -442,12 +443,229 @@ Comment blocks are explained by themselves.
 }
 ////
 
-Extrusion of comment blocks is nonsense.
+==== Codex Directive
+
+...
+
+==== Style Directive
 
 ////
-/CommentBlock extrude override
-/introduce extrude method override
+///include
+style_directive.adoc
+////
+
+==== Code Chunks
+
+Code chunks are comment blocks where the first content line starts with a single '/'.
+
+////
+/parse comment block
+if (lines.size() >= 2 && lines[0].size() >= 2 && lines[0][0] == '/' && lines[0][1] != '/')
 {
+    /parse code chunk
+    return;
 }
 ////
 
+////
+/codexplain support types
+
+/CodeChunk support types
+
+class CodeChunk : public CodexElement
+{
+ public:
+    /CodeChunk constructor
+    /CodeChunk methods
+ private:
+    /CodeChunk fields
+};
+////
+
+Each chunk block of a document is uniquely identified by a name, a form number and a part number.
+Also, a chunk holds pieces of content suitable to extrusion and explanation.
+
+////
+/parse code chunk
+std::string name;
+int form_number;
+int part_number;
+std::vector<CodexElement*> content;
+/acquire code chunk constructor parameters
+document.elements.push_back(new CodeChunk(name, form_number, part_number, content));
+////
+
+////
+/CodeChunk constructor
+CodeChunk(std::string name, int form_number, int part_number, std::vector<CodexElement*> content)
+{
+    /CodeChunk constructor body
+}
+////
+
+The chunk name is provided by the first line of a codex comment block without the heading '/'.
+
+////
+/acquire code chunk constructor parameters
+name = lines[0].substr(1);
+////
+
+////
+/CodeChunk fields
+std::string name_;
+////
+
+////
+/CodeChunk constructor body
+name_ = name;
+if (name_.empty() || name_[0] == '/')
+{
+    throw std::runtime_error(std::string("invalid chunk name '") + name_ + "'");
+}
+////
+
+The form number for a given chunk name
+starts at 1 and is increment by <<Chunk Reset>> directive.
+
+////
+/codexplain includes
+#include <unordered_map>
+////
+
+////
+/Document fields
+std::unordered_map<std::string, int> form_counts;
+////
+
+////
+/acquire code chunk constructor parameters
+form_number = document.form_counts.insert(std::make_pair<std::string, int>(std::string(name), 1)).first->second;
+////
+
+////
+/CodeChunk fields
+int form_number_;
+////
+
+////
+/codexplain includes
+#include <cassert>
+////
+
+////
+/CodeChunk constructor body
+form_number_ = form_number;
+assert(form_number_ >= 1);
+////
+
+The part number for a given chunk name and form number starts at 1
+and is incremented on each occurrence of chunks with same name in input.
+
+////
+/codexplain includes
+#include <tuple>
+////
+
+////
+/Document fields
+std::unordered_map<std::tuple<std::string, int>, int> part_counts;
+////
+
+////
+/codexplain support types
+
+/enable use of tuple<string,int> as map keys
+////
+
+////
+/acquire code chunk constructor parameters
+part_number = ++document.part_counts.insert(std::make_pair<std::tuple<std::string, int>, int>(std::make_tuple(name, form_number), 0)).first->second;
+////
+
+////
+/CodeChunk fields
+int part_number_;
+////
+
+////
+/CodeChunk constructor body
+part_number_ = part_number;
+assert(part_number_ >= 1);
+////
+
+A chunk comprises lines of literal source code intermixed with references to other chunks.
+
+////
+/acquire code chunk constructor parameters
+for (auto line = lines.cbegin() + 1; line != lines.cend(); ++line)
+{
+    /is 'line' a chunk reference?
+    {
+        /append chunk reference to 'content'
+        continue;
+    }
+    /correct for chunk reference escape
+    /append literal code line to 'content'
+}
+////
+
+////
+/is 'line' a chunk reference?
+if (line->size() >= 2 && line->at(0) == '/' && line->at(1) != '/')
+////
+
+////
+/CodeChunk fields
+std::vector<CodexElement*> content_;
+////
+
+////
+/CodeChunk constructor body
+content_ = content;
+assert(!content_.empty());
+////
+
+////
+/CodeChunk methods
+/introduce explain method override
+{
+    for (CodexElement* element: content_)
+    {
+        element->explain(document);
+    }
+}
+////
+
+////
+/CodeChunk methods
+virtual void extrude(const Document* document, ExtrusionParameters parameters) override
+{
+    for (CodexElement* element: content_)
+    {
+        element->extrude(document, parameters);
+    }
+}
+////
+
+...
+
+=== Miscellaneous
+
+Tuples require custom hash generators to be used as keys in C++ unordered maps.
+
+////
+/enable use of tuple<string,int> as map keys
+namespace std
+{
+    template<> struct hash<std::tuple<std::string, int>>
+    {
+        std::size_t operator()(std::tuple<std::string, int>const& s) const noexcept
+        {
+            std::string s1;
+            int s2;
+            std::tie(s1, s2) = s;
+            return std::hash<std::string>{}(std::to_string(s2) + "\0" + s1);
+        }
+    };
+}
+////

@@ -1,0 +1,38 @@
+_StyleDirective_ represents a codex style directive (see <<Style Directive>>).
+
+////
+/parse comment block
+if (lines.size() == 1 && lines.at(0) == "///style")
+{
+    document.elements.push_back(new StyleDirective);
+    return;
+}
+////
+
+////
+/codexplain support types
+
+class StyleDirective : public CodexElement
+{
+ public:
+    /StyleDirective explain override
+    /extrude empty override
+};
+////
+
+When explained, _StyleDirective_ offers a HTML style section
+for better renderization of its elements on top of asciidoctor default style.
+
+////
+/StyleDirective explain override
+/introduce explain method override
+{
+    std::cout << "++++" << std::endl
+              << "<style>" << std::endl;
+    std::cout << "
+/codex style/++
+" << std::endl;
+    std::cout << "</style>" << std::endl
+              << "++++" << std::endl;
+}
+////

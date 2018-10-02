@@ -638,7 +638,7 @@ assert(!content_.empty());
 
 ////
 /CodeChunk methods
-virtual void extrude(const Document* document, ExtrusionParameters parameters) override
+/introduce extrude method override
 {
     for (CodexElement* element: content_)
     {
@@ -646,6 +646,50 @@ virtual void extrude(const Document* document, ExtrusionParameters parameters) o
     }
 }
 ////
+
+===== Chunk References
+
+////
+/codexplain support types
+
+class ChunkReference : public CodexElement
+{
+ public:
+    /ChunkReference constructor
+    /ChunkReference methods
+ private:
+    /ChunkReference fields
+};
+////
+
+////
+/append chunk reference to 'content'
+...
+////
+
+
+
+...
+
+////
+/ChunkReference methods
+/introduce explain method override
+{
+    ...
+}
+////
+
+////
+/ChunkReference methods
+/introduce extrude method override
+{
+    ...
+}
+////
+
+Chunk references remember their indentation.
+
+...
 
 ...
 

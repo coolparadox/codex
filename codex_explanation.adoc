@@ -406,7 +406,7 @@ comment_lines.clear();
 comment_lines.push_back(line);
 ////
 
-Other types of codex elements may be disguised as comment blocks.
+All other types of codex elements are particular types of comment blocks.
 
 ////
 /end comment block acquisition
@@ -443,20 +443,9 @@ Comment blocks are explained by themselves.
 }
 ////
 
-==== Codex Directive
-
-...
-
-==== Style Directive
-
-////
-///include
-style_directive.adoc
-////
-
 ==== Code Chunks
 
-Code chunks are comment blocks where the first content line starts with a single '/'.
+Code chunks are comment blocks where the first content line starts with a single `/`.
 
 ////
 /parse comment block
@@ -503,7 +492,7 @@ CodeChunk(std::string name, int form_number, int part_number, std::vector<CodexE
 }
 ////
 
-The chunk name is provided by the first line of a codex comment block without the heading '/'.
+The chunk name is provided by the first line of a codex comment block without the heading `/`.
 
 ////
 /acquire code chunk constructor parameters
@@ -610,11 +599,6 @@ for (auto line = lines.cbegin() + 1; line != lines.cend(); ++line)
 ////
 
 ////
-/is 'line' a chunk reference?
-if (line->size() >= 2 && line->at(0) == '/' && line->at(1) != '/')
-////
-
-////
 /CodeChunk fields
 std::vector<CodexElement*> content_;
 ////
@@ -649,6 +633,49 @@ assert(!content_.empty());
 
 ===== Chunk References
 
+Chunk references start with a single `/`, optionally prefixed by blanks.
+
+////
+/is 'line' a chunk reference?
+str::string line_tmp(*line);
+std::string prefix;
+for (auto ch = line_tmp->cbegin(); ch != line_tmp->cend(); ++ch)
+{
+    if (*ch != ' ' && *ch != '\t') break;
+    prefix.push_back(*ch);
+}
+line_tmp->erase(0, prefix.len());
+if (line_tmp.size() >= 2 && line_tmp.at(0) == '/' && line_tmp.at(1) != '/')
+////
+
+////
+/append chunk reference to 'content'
+line_tmp->erase(0, 1);
+/extract line break escape flags from 'line'
+content.push_back(new ChunkReference(line_tmp, prefix, pre_escape, pos_escape));
+////
+
+Chunk references may specify line break escapes; see <<Line Break Escape>>;
+
+////
+/extract line break escape flags from 'line'
+bool pre_escape { false };
+bool pos_escape { false };
+if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
+{
+    char pre_ch = line_tmp.at(line_tmp.size() - 2);
+    char pos_char = line_tmp.at(line_tmp.size() - 1);
+    if ((pre_ch == '.' || pre_ch == '+') && (pos_ch == '.' || pos_ch == '+'))
+    {
+        pre_escape = pre_ch == '+';
+        pos_escape = pos_ch == '+';
+        line_tmp.erase(line_tmp.size() - 3);
+    }
+}
+////
+
+...
+
 ////
 /codexplain support types
 
@@ -660,11 +687,6 @@ class ChunkReference : public CodexElement
  private:
     /ChunkReference fields
 };
-////
-
-////
-/append chunk reference to 'content'
-...
 ////
 
 

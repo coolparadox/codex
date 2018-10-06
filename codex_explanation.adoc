@@ -274,15 +274,15 @@ struct ExtrusionParameters
 };
 ////
 
-References to chunks may contain indentation that affects all referenced content
-when producing code files (see example in <<Code Chunks>>).
+Extrusion of referenced chunks is affected by the indentation of the reference, that is propagated to all target code
+(see example in <<Code Chunks>>).
 
 ////
 /ExtrusionParameters fields
 std::string prefix;
 ////
 
-They also tell if the referenced chunk must attach itself to the previous and/or
+Chunk references also tell if the referenced chunk must attach itself to the previous and/or
 next lines (see <<Line Break Escape>>).
 
 ////

@@ -20,7 +20,7 @@ Remove following style defs when performed by weaving:
 
 ++++
 <style>
-code.codex{word-spacing:unset;padding:unset;background-color:unset}
+code.codex{font-size:small;word-spacing:unset;padding:unset;background-color:unset}
 span.codex{opacity:.5}
 table.codex{background:unset;border:unset}
 tr:nth-child(even).codex{background:unset}

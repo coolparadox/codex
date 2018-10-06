@@ -633,11 +633,32 @@ assert(!content_.empty());
 
 ===== Chunk References
 
-Chunk references start with a single `/`, optionally prefixed by blanks.
+////
+/codexplain support types
+
+class ChunkReference : public CodexElement
+{
+ public:
+    /ChunkReference constructor
+    /ChunkReference methods
+ private:
+    /ChunkReference fields
+};
+////
+
+Chunk references start with a single `/`.
 
 ////
 /is 'line' a chunk reference?
 str::string line_tmp(*line);
+/extract 'prefix' from 'line_tmp'
+if (line_tmp.size() >= 2 && line_tmp.at(0) == '/' && line_tmp.at(1) != '/')
+////
+
+Chunk references may be optionally prefixed by blanks.
+
+////
+/extract 'prefix' from 'line_tmp'
 std::string prefix;
 for (auto ch = line_tmp->cbegin(); ch != line_tmp->cend(); ++ch)
 {
@@ -645,20 +666,56 @@ for (auto ch = line_tmp->cbegin(); ch != line_tmp->cend(); ++ch)
     prefix.push_back(*ch);
 }
 line_tmp->erase(0, prefix.len());
-if (line_tmp.size() >= 2 && line_tmp.at(0) == '/' && line_tmp.at(1) != '/')
 ////
 
 ////
 /append chunk reference to 'content'
 line_tmp->erase(0, 1);
-/extract line break escape flags from 'line'
+/extract 'pre_escape' and 'pos_escape' flags from 'line_tmp'
 content.push_back(new ChunkReference(line_tmp, prefix, pre_escape, pos_escape));
+////
+
+////
+/ChunkReference constructor
+ChunkReference(std::string target, std::string prefix, bool pre_escape, bool pos_escape)
+{
+    /CodeChunk constructor body
+}
+////
+
+The chunk name is provided by the first line of a codex comment block without the heading `/`.
+
+////
+/acquire code chunk constructor parameters
+name = lines[0].substr(1);
+////
+
+////
+/CodeChunk fields
+std::string name_;
+////
+
+////
+/CodeChunk constructor body
+name_ = name;
+if (name_.empty() || name_[0] == '/')
+{
+    throw std::runtime_error(std::string("invalid chunk name '") + name_ + "'");
+}
+////
+
+The form number for a given chunk name
+starts at 1 and is increment by <<Chunk Reset>> directive.
+
+////
+/codexplain includes
+#include <unordered_map>
 ////
 
 Chunk references may specify line break escapes; see <<Line Break Escape>>;
 
 ////
-/extract line break escape flags from 'line'
+/extract 'pre_escape' and 'pos_escape' flags from 'line_tmp'
 bool pre_escape { false };
 bool pos_escape { false };
 if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
@@ -675,19 +732,6 @@ if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
 ////
 
 ...
-
-////
-/codexplain support types
-
-class ChunkReference : public CodexElement
-{
- public:
-    /ChunkReference constructor
-    /ChunkReference methods
- private:
-    /ChunkReference fields
-};
-////
 
 
 

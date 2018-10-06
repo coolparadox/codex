@@ -650,27 +650,28 @@ Chunk references start with a single `/`.
 
 ////
 /is 'line' a chunk reference?
-str::string line_tmp(*line);
+std::string line_tmp(*line);
 /extract 'prefix' from 'line_tmp'
 if (line_tmp.size() >= 2 && line_tmp.at(0) == '/' && line_tmp.at(1) != '/')
 ////
 
 Chunk references may be optionally prefixed by blanks.
+This prefix must be stored as it influences identation of referenced extruded content.
 
 ////
 /extract 'prefix' from 'line_tmp'
 std::string prefix;
-for (auto ch = line_tmp->cbegin(); ch != line_tmp->cend(); ++ch)
+for (auto ch = line_tmp.cbegin(); ch != line_tmp.cend(); ++ch)
 {
     if (*ch != ' ' && *ch != '\t') break;
     prefix.push_back(*ch);
 }
-line_tmp->erase(0, prefix.len());
+line_tmp.erase(0, prefix.size());
 ////
 
 ////
 /append chunk reference to 'content'
-line_tmp->erase(0, 1);
+line_tmp.erase(0, 1);
 /extract 'pre_escape' and 'pos_escape' flags from 'line_tmp'
 content.push_back(new ChunkReference(line_tmp, prefix, pre_escape, pos_escape));
 ////
@@ -679,37 +680,8 @@ content.push_back(new ChunkReference(line_tmp, prefix, pre_escape, pos_escape));
 /ChunkReference constructor
 ChunkReference(std::string target, std::string prefix, bool pre_escape, bool pos_escape)
 {
-    /CodeChunk constructor body
+    /ChunkReference constructor body
 }
-////
-
-The chunk name is provided by the first line of a codex comment block without the heading `/`.
-
-////
-/acquire code chunk constructor parameters
-name = lines[0].substr(1);
-////
-
-////
-/CodeChunk fields
-std::string name_;
-////
-
-////
-/CodeChunk constructor body
-name_ = name;
-if (name_.empty() || name_[0] == '/')
-{
-    throw std::runtime_error(std::string("invalid chunk name '") + name_ + "'");
-}
-////
-
-The form number for a given chunk name
-starts at 1 and is increment by <<Chunk Reset>> directive.
-
-////
-/codexplain includes
-#include <unordered_map>
 ////
 
 Chunk references may specify line break escapes; see <<Line Break Escape>>;
@@ -721,7 +693,7 @@ bool pos_escape { false };
 if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
 {
     char pre_ch = line_tmp.at(line_tmp.size() - 2);
-    char pos_char = line_tmp.at(line_tmp.size() - 1);
+    char pos_ch = line_tmp.at(line_tmp.size() - 1);
     if ((pre_ch == '.' || pre_ch == '+') && (pos_ch == '.' || pos_ch == '+'))
     {
         pre_escape = pre_ch == '+';
@@ -741,7 +713,7 @@ if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
 /ChunkReference methods
 /introduce explain method override
 {
-    ...
+    // ...
 }
 ////
 
@@ -749,7 +721,7 @@ if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
 /ChunkReference methods
 /introduce extrude method override
 {
-    ...
+    // ...
 }
 ////
 

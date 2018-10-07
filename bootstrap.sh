@@ -24,7 +24,7 @@ extrude() {
         test "$CURRENT_CHUNK" = "$TARGET_CHUNK" || continue
         case $LINE in
             /*)
-                extrude "$LINE" "$CODEX_FILE"
+                extrude "${LINE%/??}" "$CODEX_FILE"
                 ;;
             *)
                 echo "$LINE"
@@ -43,7 +43,7 @@ asciidoctor \
     --backend html5 \
     --failure-level WARN \
     --verbose \
-    - 1>codex.html 
+    - 1>codex.html
 file codex.html
 
 extrude '//codexplain.cpp' codex_explanation.adoc 1>src/codexplain.cpp

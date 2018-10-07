@@ -454,7 +454,7 @@ What if a given literal line of code starts with a single `/`?
 ....
 
 The above doesn't work as the line would be handled as a chunk reference.
-As a workaround, inside chubks, codex considers any line starting with `//`
+As a workaround, inside chunks, codex considers any line starting with `//`
 as a literal line of code with the heading `//` replaced by `/`.
 
 So the above chunk is required to be written instead as:

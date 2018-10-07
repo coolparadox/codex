@@ -633,6 +633,8 @@ assert(!content_.empty());
 
 ===== Chunk References
 
+A chunk reference in a chunk is a placeholder for another chunk.
+
 ////
 /codexplain support types
 
@@ -656,7 +658,7 @@ if (line_tmp.size() >= 2 && line_tmp.at(0) == '/' && line_tmp.at(1) != '/')
 ////
 
 Chunk references may be optionally prefixed by blanks.
-This prefix must be stored as it influences identation of referenced extruded content.
+This prefix must be stored as it influences indentation of referenced extruded content.
 
 ////
 /extract 'prefix' from 'line_tmp'
@@ -672,22 +674,36 @@ line_tmp.erase(0, prefix.size());
 ////
 /append chunk reference to 'content'
 line_tmp.erase(0, 1);
-/extract 'pre_escape' and 'pos_escape' flags from 'line_tmp'
-content.push_back(new ChunkReference(line_tmp, prefix, pre_escape, pos_escape));
+/extract ChunkReference constructor values
+content.push_back(new ChunkReference(line_tmp, prefix
+/ChunkReference constructor values/++
+));
 ////
 
 ////
 /ChunkReference constructor
-ChunkReference(std::string target, std::string prefix, bool pre_escape, bool pos_escape)
+ChunkReference(std::string target, std::string prefix
+/ChunkReference constructor parameters/++
+) :
+    target_(target),
+    prefix_(prefix)
+    /ChunkReference constructor initializers/+.
 {
+    assert(!target_.empty());
     /ChunkReference constructor body
 }
+////
+
+////
+/ChunkReference fields
+std::string target_;
+std::string prefix_;
 ////
 
 Chunk references may specify line break escapes; see <<Line Break Escape>>;
 
 ////
-/extract 'pre_escape' and 'pos_escape' flags from 'line_tmp'
+/extract ChunkReference constructor values
 bool pre_escape { false };
 bool pos_escape { false };
 if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
@@ -703,11 +719,45 @@ if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
 }
 ////
 
-...
+////
+/ChunkReference constructor values
+/pre and pos escape values/++
+////
 
+////
+/pre and pos escape values
+, pre_escape, pos_escape
+////
 
+////
+/ChunkReference constructor parameters
+/pre and pos escape parameters/++
+////
 
-...
+////
+/pre and pos escape parameters
+, bool pre_escape, bool pos_escape
+////
+
+////
+/ChunkReference constructor initializers
+/pre and pos escape initializers/++
+////
+
+////
+/pre and pos escape initializers
+,
+pre_escape_(pre_escape),
+pos_escape_(pos_escape)
+////
+
+////
+/ChunkReference fields
+bool pre_escape_;
+bool pos_escape_;
+////
+
+In processed documentation, a chunk reference takes the form of a link to its target.
 
 ////
 /ChunkReference methods
@@ -725,9 +775,6 @@ if (line_tmp.size() >= 3 && line_tmp.at(line_tmp.size() - 3) == '/')
 }
 ////
 
-Chunk references remember their indentation.
-
-...
 
 ...
 

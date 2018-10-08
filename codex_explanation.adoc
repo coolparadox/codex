@@ -240,55 +240,37 @@ for (CodexElement* element: document.elements)
 Method _explain_ of _CodexElement_ outputs printable content about itself
 to file descriptor 1.
 This method receives the parsed document for eventual queries.
+Also, a context may be required for tuning explanation of some types of elements.
 
 ////
 /CodexElement methods
-virtual void explain(const Document* document) = 0;
-////
-
-////
-/explain 'element'
-element->explain(&document);
-////
-
-Method _extrude_ of _CodexElement_ outputs file generation instructions
-to file descriptor 3.
-Likewise, this method receives the parsed document for eventual queries.
-
-////
-/CodexElement methods
-virtual void extrude(const Document* document, ExtrusionParameters parameters) = 0;
-////
-
-////
-/extrude 'element'
-element->extrude(&document, {});
+virtual void explain(const Document* document, ExplanationContext context) = 0;
 ////
 
 ////
 /CodexElement support types
 
-struct ExtrusionParameters
+struct ExplanationContext
 {
-    /ExtrusionParameters fields
+    /ExplanationContext fields
 };
 ////
 
-Extrusion of referenced chunks is affected by the indentation of the reference, that is propagated to all target code
-(see example in <<Code Chunks>>).
-
 ////
-/ExtrusionParameters fields
-std::string prefix;
+/explain 'element'
+element->explain(&document, {});
 ////
 
-Chunk references also tell if the referenced chunk must attach itself to the previous and/or
-next lines (see <<Line Break Escape>>).
+Method _extrude_ of _CodexElement_ outputs file generation instructions to file descriptor 3.
 
 ////
-/ExtrusionParameters fields
-bool break_line_before { true };
-bool break_line_after { true };
+/CodexElement methods
+virtual void extrude(const Document* document, ExplanationContext context) = 0;
+////
+
+////
+/extrude 'element'
+element->extrude(&document, {});
 ////
 
 ==== Asciidoc Line
@@ -341,7 +323,7 @@ Explanation of raw asciidoc is straightforward -- just copy to output.
 
 ////
 /introduce explain method override
-virtual void explain(const Document* document) override
+virtual void explain(const Document* document, ExplanationContext context) override
 ////
 
 Extrusion of raw asciidoc is nonsense.
@@ -355,7 +337,7 @@ Extrusion of raw asciidoc is nonsense.
 
 ////
 /introduce extrude method override
-virtual void extrude(const Document* document, ExtrusionParameters parameters) override
+virtual void extrude(const Document* document, ExplanationContext context) override
 ////
 
 ==== Comment Block
@@ -615,7 +597,7 @@ assert(!content_.empty());
 {
     for (CodexElement* element: content_)
     {
-        element->explain(document);
+        element->explain(document, context);
     }
 }
 ////
@@ -626,7 +608,7 @@ assert(!content_.empty());
 {
     for (CodexElement* element: content_)
     {
-        element->extrude(document, parameters);
+        element->extrude(document, context);
     }
 }
 ////
@@ -658,7 +640,7 @@ if (line_tmp.size() >= 2 && line_tmp.at(0) == '/' && line_tmp.at(1) != '/')
 ////
 
 Chunk references may be optionally prefixed by blanks.
-This prefix must be stored as it influences indentation of referenced extruded content.
+This prefix must be stored as it influences indentation of referenced content.
 
 ////
 /extract 'prefix' from 'line_tmp'
@@ -773,6 +755,17 @@ In processed documentation, a chunk reference takes the form of a link to its ta
 {
     // ...
 }
+////
+
+////
+/ExplanationContext fields
+std::string prefix;
+////
+
+////
+/ExplanationContext fields
+bool break_line_before { true };
+bool break_line_after { true };
 ////
 
 

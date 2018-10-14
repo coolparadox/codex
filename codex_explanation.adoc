@@ -56,6 +56,7 @@ if (argc != 1)
 std::cerr << "usage: codexplain 0<expansion 1>explanation 3>extrusion" << std::endl;
 ////
 
+File descriptors 0, 1 and 2 are open by default in C++ through streams _cin_, _cout_ and _cerr_ from _std_ namespace.
 Let's keep file descriptor 3 open for writing;
 accessible by C stream _ext_ (after "`extrusion`").
 

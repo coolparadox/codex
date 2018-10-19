@@ -56,7 +56,7 @@ if (argc != 1)
 std::cerr << "usage: codexplain 0<expansion 1>explanation 3>extrusion" << std::endl;
 ////
 
-File descriptors 0, 1 and 2 are open by default in C++ through streams _cin_, _cout_ and _cerr_ from _std_ namespace.
+File descriptors 0, 1 and 2 are open by default in C++ through streams _cin_, _cout_ and _cerr_ from _std_ namespace by inclusion of _iostream_ header.
 Let's keep file descriptor 3 open for writing;
 accessible by C stream _ext_ (after "`extrusion`").
 
@@ -250,6 +250,7 @@ virtual void explain(const Document* document, ExplanationContext context) = 0;
 
 ////
 /CodexElement support types
+/ExplanationContext support types
 
 struct ExplanationContext
 {
@@ -640,7 +641,7 @@ std::string line_tmp(*line);
 if (line_tmp.size() >= 2 && line_tmp.at(0) == '/' && line_tmp.at(1) != '/')
 ////
 
-Chunk references may be optionally prefixed by blanks.
+Chunk references may be optionally prefixed by spaces.
 This prefix must be stored as it influences indentation of referenced content.
 
 ////
@@ -648,7 +649,7 @@ This prefix must be stored as it influences indentation of referenced content.
 std::string prefix;
 for (auto ch = line_tmp.cbegin(); ch != line_tmp.cend(); ++ch)
 {
-    if (*ch != ' ' && *ch != '\t') break;
+    if (*ch != ' ') break;
     prefix.push_back(*ch);
 }
 line_tmp.erase(0, prefix.size());
@@ -744,11 +745,126 @@ In processed documentation, a chunk reference takes the form of a link to its ta
 
 ////
 /ChunkReference methods
-/introduce explain method override
+virtual void explain(const Document* document, ExplanationContext context) override;
+////
+
+////
+//codexplain.cpp
+
+void ChunkReference::explain(const Document* document, ExplanationContext context)
 {
-    // ...
+    /check for chunk target dereference
+    /explain chunk reference prefix
+    /explain chunk reference target
+    /explain chunk reference line break
+    std::cout << "<br>" << std::endl;
 }
 ////
+
+////
+/check for chunk target dereference
+try
+{
+    document->form_counts.at(target_);
+}
+catch (std::out_of_range)
+{
+    std::cerr << "codexplain";
+    if (fail_on_chunkreference_missing_target)
+    {
+        std::cerr << ": error";
+    }
+    else
+    {
+        std::cerr << ": warning";
+    }
+    std::cerr << ": chunk target '" << target_ << "' does not exist." << std::endl;
+    if (fail_on_chunkreference_missing_target)
+    {
+        std::exit(1);
+    }
+}
+////
+
+////
+/codexplain declarations
+bool fail_on_chunkreference_missing_target { true };
+////
+
+////
+/codexplain includes
+#include <cstdlib>
+#include <stdexcept>
+////
+
+Let's render the prefix as non breaking spaces or tabs.
+
+////
+/explain chunk reference prefix
+if (prefix_.size() > 0)
+{
+    std::cout << "<code class=\"codex\">";
+    for (char ch: prefix_)
+    {
+        assert(ch == ' ');
+        std::cout << "&nbsp;";
+    }
+    std::cout << "</code>";
+}
+////
+
+Let's render the target a link to the first part of the current form of the referenced chunk.
+
+////
+/explain chunk reference target
+std::cout << "<em><a href=\"#";
+for (char ch: target_)
+{
+    if (ch == ' ')
+    {
+        std::cout << '_';
+    }
+    else
+    {
+        std::cout << ch;
+    }
+}
+std::cout << "_" << document->form_counts.at(target_) << "\">";
+std::cout << target_ << "</a></em>";
+////
+
+And finally the newline mark, if not escaped by both this and next sibling element.
+
+////
+/explain chunk reference line break
+ChunkReference* next = dynamic_cast<ChunkReference*>(context.next_sibling);
+bool next_pre_escape = next && next->pre_escape_;
+if (!pos_escape_ || !next_pre_escape)
+{
+    std::cout << "<span class=\"codex\">&crarr;</span>";
+}
+////
+
+////
+/ExplanationContext fields
+CodexElement* next_sibling { nullptr };
+////
+
+////
+/ExplanationContext support types
+
+class CodexElement;
+////
+
+provide next sibling...
+
+////
+
+////
+
+
+
+...
 
 ////
 /ChunkReference methods
@@ -756,17 +872,6 @@ In processed documentation, a chunk reference takes the form of a link to its ta
 {
     // ...
 }
-////
-
-////
-/ExplanationContext fields
-std::string prefix;
-////
-
-////
-/ExplanationContext fields
-bool break_line_before { true };
-bool break_line_after { true };
 ////
 
 

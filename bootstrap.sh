@@ -6,7 +6,7 @@ extrude() {
     local CODEX_FILE=$2
     local INSIDE_LITERAL=0
     local CURRENT_CHUNK=''
-    while read LINE ; do
+    while read -r LINE ; do
         test "$LINE" = '////' && {
             if test $INSIDE_LITERAL -eq 0 ; then
                 INSIDE_LITERAL=1

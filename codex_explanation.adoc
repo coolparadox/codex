@@ -156,6 +156,7 @@ Second, produce output from _document_ contents.
 /initialize output
 /for each 'element' of 'document'
 {
+    /setup explanation context
     /explain 'element'
     /if 'element' is a code file
     {
@@ -235,7 +236,7 @@ std::vector<CodexElement*> elements;
 
 ////
 /for each 'element' of 'document'
-for (CodexElement* element: document.elements)
+for (auto element = document.elements.cbegin(); element != document.elements.cend(); ++element)
 ////
 
 Method _explain_ of _CodexElement_ outputs printable content about itself
@@ -259,8 +260,13 @@ struct ExplanationContext
 ////
 
 ////
+/setup explanation context
+ExplanationContext context;
+////
+
+////
 /explain 'element'
-element->explain(&document, {});
+(*element)->explain(&document, context);
 ////
 
 Method _extrude_ of _CodexElement_ outputs file generation instructions to file descriptor 3.
@@ -272,7 +278,7 @@ virtual void extrude(const Document* document, ExplanationContext context) = 0;
 
 ////
 /extrude 'element'
-element->extrude(&document, {});
+(*element)->extrude(&document, context);
 ////
 
 ==== Asciidoc Line
@@ -741,7 +747,8 @@ bool pre_escape_;
 bool pos_escape_;
 ////
 
-In processed documentation, a chunk reference takes the form of a link to its target.
+As for explanation, in processed documentation,
+a chunk reference takes the form of a link to its target.
 
 ////
 /ChunkReference methods
@@ -833,15 +840,18 @@ std::cout << "_" << document->form_counts.at(target_) << "\">";
 std::cout << target_ << "</a></em>";
 ////
 
-And finally the newline mark, if not escaped by both this and next sibling element.
+And finally the newline mark, if not escaped by this or next sibling element.
 
 ////
 /explain chunk reference line break
-ChunkReference* next = dynamic_cast<ChunkReference*>(context.next_sibling);
-bool next_pre_escape = next && next->pre_escape_;
-if (!pos_escape_ || !next_pre_escape)
+if (!pos_escape_)
 {
-    std::cout << "<span class=\"codex\">&crarr;</span>";
+    ChunkReference* next = dynamic_cast<ChunkReference*>(context.next_sibling);
+    bool next_pre_escape = next && next->pre_escape_;
+    if (!next_pre_escape)
+    {
+        std::cout << "<span class=\"codex\">&crarr;</span>";
+    }
 }
 ////
 
@@ -856,12 +866,15 @@ CodexElement* next_sibling { nullptr };
 class CodexElement;
 ////
 
-provide next sibling...
-
+////
+/setup explanation context
+if (element != document.elements.cend())
+{
+    context.next_sibling = *(element + 1);
+}
 ////
 
-////
-
+As for extrusion, ...
 
 
 ...

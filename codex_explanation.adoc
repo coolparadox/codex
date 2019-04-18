@@ -57,8 +57,7 @@ std::cerr << "usage: codexplain 0<expansion 1>explanation 3>extrusion" << std::e
 ////
 
 File descriptors 0, 1 and 2 are open by default in C++ through streams _cin_, _cout_ and _cerr_ from _std_ namespace by inclusion of _iostream_ header.
-Let's keep file descriptor 3 open for writing;
-accessible by C stream _ext_ (after "`extrusion`").
+Let's keep file descriptor 3 open for writing through C stream _ext_ (after "`extrusion`").
 
 ////
 codexplain includes
@@ -242,7 +241,7 @@ for (auto element = document.elements.cbegin(); element != document.elements.cen
 Method _explain_ of _CodexElement_ outputs printable content about itself
 to file descriptor 1.
 This method receives the parsed document for eventual queries.
-Also, a context may be required for tuning explanation of some types of elements.
+Also, some context may be required for tuning explanation of some types of elements.
 
 ////
 /CodexElement methods

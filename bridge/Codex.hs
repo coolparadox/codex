@@ -35,13 +35,17 @@ parseHighLevel ((CommentBlock ["///include", path]):xs) = (IncludeBlock path):(p
 parseHighLevel (x:xs) = x:(parseHighLevel xs)
 
 actionize :: [CodexBlock] -> [IO ()]
-actionize [] = [return ()]
+actionize [] = []
 actionize ((IncludeBlock path):xs) = action:(actionize xs) where
     action = do
         h <- openFile path ReadMode
         c <- hGetContents h
         sequence_ (actionize (parse c))
         hClose h
-actionize ((RawBlock ls):xs) = (putStrLn (unlines ls)):(actionize xs)
-actionize (_:xs) = actionize xs
+actionize ((RawBlock ls):xs) = (putStr (unlines ls)):(actionize xs)
+actionize ((CommentBlock ls):xs) = action:(actionize xs) where
+    action = do
+        putStrLn "////"
+        sequence_ (map putStrLn ls)
+        putStrLn "////"
 

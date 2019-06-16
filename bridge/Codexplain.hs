@@ -30,6 +30,8 @@ promoteCommentBlocks (block:blocks) stat = (promoted_block:promoted_blocks, upda
 
 promoteCommentBlock :: Block -> Statistics -> (Block, Statistics)
 promoteCommentBlock block@(CommentBlock (x:xs)) stat
+    | take 4 x == "////" = (block, stat)
+    | take 3 x == "///" = (block, stat)
     | take 2 x == "//" = promoteToCodeFileBlock (drop 2 x) xs stat
     | otherwise = (block, stat)
 promoteCommentBlock block stat = (block, stat)
@@ -49,12 +51,48 @@ incrementStatistic _ _ value = value + 1
 
 explainDocument :: Document -> String
 explainDocument (MakeDocument _ []) = ""
-explainDocument (MakeDocument stat (block:blocks)) = (explainBlock block) ++ (explainDocument (MakeDocument stat blocks))
+explainDocument (MakeDocument stat (block:blocks)) = (explainBlock block stat) ++ (explainDocument (MakeDocument stat blocks))
 
-explainBlock :: Block -> String
-explainBlock (RawBlock strs) = unlines strs
-explainBlock (CommentBlock strs) = "////\n" ++ unlines strs ++ "////\n"
-explainBlock (CodeFileBlock path count content) = "FILE " ++ path ++ " " ++ show count ++ "\n"
+explainBlock :: Block -> Statistics -> String
+explainBlock (RawBlock strs) _ = unlines strs
+explainBlock (CommentBlock strs) _ = "////\n" ++ unlines strs ++ "////\n"
+explainBlock block@(CodeFileBlock path _ _) (MakeStatistics codefile_map) = explainCodeFileBlock block (codefile_map Map.! path)
+
+explainCodeFileBlock :: Block -> Int -> String
+explainCodeFileBlock (CodeFileBlock path count content) max_count = ""
+    ++ "." ++ path ++ sortingNote count max_count ++ "\n"
+    ++ "[#" ++ targetLabel path count ++ "]\n"
+    ++ "++++\n"
+    ++ "<div id=\"" ++ targetLabel path count ++ "\" class=\"exampleblock\" style=\"margin-bottom:1.25em;\">\n"
+    ++ "<div class=\"title\">" ++ path ++ "</div>\n"
+    ++ "<div class=\"content\" style=\"margin-bottom:.5em;\">\n"
+    ++ (unlines $ map explainChunkContentLine content)
+    ++ "</div>\n"
+    ++ "</div>\n"
+    ++ "++++\n"
+
+explainChunkContentLine :: String -> String
+explainChunkContentLine str =
+    "<code class=\"codex\">" ++ htmlEscape str ++ "</code><span class=\"codex\">&crarr;</span><br>"
+
+htmlEscape :: String -> String
+htmlEscape "" = ""
+htmlEscape ('"':cs) = "&quot;" ++ htmlEscape cs
+htmlEscape ('\'':cs) = "&apos;" ++ htmlEscape cs
+htmlEscape ('<':cs) = "&lt;" ++ htmlEscape cs
+htmlEscape ('>':cs) = "&gt;" ++ cs
+htmlEscape ('&':cs) = "&amp;" ++ cs
+htmlEscape (' ':cs) = "&nbsp;" ++ cs
+htmlEscape (c:cs) = c:(htmlEscape cs)
+
+targetLabel :: String -> Int -> String
+targetLabel "" index = "_" ++ show index
+targetLabel ('.':cs) index = '_':(targetLabel cs index)
+targetLabel (c:cs) index = c:(targetLabel cs index)
+
+sortingNote :: Int -> Int -> String
+sortingNote _ 1 = ""
+sortingNote count max_count = " (" ++ show count ++ " of " ++ show max_count ++ ")"
 
 parseLowLevel :: [String] -> [Block]
 parseLowLevel [] = []

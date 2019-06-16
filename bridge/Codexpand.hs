@@ -1,4 +1,4 @@
-module Codex where
+module Codexpand where
 
 import System.IO
 

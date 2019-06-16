@@ -1,7 +1,7 @@
 module Main where
 
 import System.IO
-import Codex
+import Codexpand
 
 main :: IO()
 main = do

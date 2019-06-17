@@ -1,5 +1,6 @@
 module Codexplain (explain) where
 
+import Data.List
 import qualified Data.Map as Map
 
 explain :: String -> (String, String)
@@ -83,17 +84,41 @@ explainBlock (CommentBlock strs) _ = "////\n" ++ unlines strs ++ "////\n"
 explainBlock block@(CodeFileBlock path _ _) (MakeStatistics codefile_map _) = explainCodeFileBlock block (codefile_map Map.! path)
 
 explainCodeFileBlock :: Block -> Int -> String
-explainCodeFileBlock (CodeFileBlock path part content) max_count = ""
-    ++ "." ++ path ++ sortingNote part max_count ++ "\n"
+explainCodeFileBlock (CodeFileBlock path part content) max_part = ""
+    ++ "." ++ path ++ sortingNote part max_part ++ "\n"
     ++ "[#" ++ targetLabel path part ++ "]\n"
     ++ "++++\n"
     ++ "<div id=\"" ++ targetLabel path part ++ "\" class=\"exampleblock\" style=\"margin-bottom:1.25em;\">\n"
-    ++ "<div class=\"title\">" ++ path ++ sortingNote part max_count ++ "</div>\n"
+    ++ "<div class=\"title\">" ++ path ++ sortingNote part max_part ++ "</div>\n"
     ++ "<div class=\"content\" style=\"margin-bottom:.5em;\">\n"
     ++ (unlines $ map explainChunkContentLine content)
     ++ "</div>\n"
+    ++ "<div class=\"title\"><sup>"
+    ++ codeFileNavigation path part max_part
+    ++ "</sup></div>"
     ++ "</div>\n"
     ++ "++++\n"
+
+codeFileNavigation :: String -> Int -> Int -> String
+codeFileNavigation _ _ 1 = ""
+codeFileNavigation path part max_part = navigation ++ end_of_line where
+    navigation = intercalate ", " navigators
+    end_of_line = if navigation /= "" then ".<br>" else ""
+    navigators = first ++ previous ++ next ++ last
+    first = if part > 2 then ["First: " ++ anchorize 1] else []
+    previous = if part /= 1 then ["Previous: " ++ anchorize (part - 1)] else []
+    next = if part /= max_part then ["Next: " ++ anchorize (part + 1)] else []
+    last = if part < max_part - 1 then ["Last: " ++ anchorize max_part] else []
+    anchorize = codeFileHRef path max_part
+
+codeFileHRef :: String -> Int -> Int -> String
+codeFileHRef path max_part part = ""
+    ++ "<a href=\"#"
+    ++ targetLabel path part
+    ++ "\">"
+    ++ path
+    ++ sortingNote part max_part
+    ++ "</a>"
 
 explainChunkContentLine :: ChunkLine -> String
 explainChunkContentLine (ChunkReference target form prefix) =

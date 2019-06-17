@@ -6,6 +6,7 @@ ghc -o codexplain codexplain.hs
 cd ..
 ./bridge/codexpand 0<codex.adoc | \
 ./bridge/codexplain 3>/dev/null | \
+tee bridge/codex.adoc | \
 asciidoctor \
     -r asciidoctor-diagram \
     --backend html5 \

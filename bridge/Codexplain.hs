@@ -96,20 +96,23 @@ incrementCodeFilePart :: String -> Int -> Int -> Int
 incrementCodeFilePart _ _ part = part + 1
 
 explainDocument :: Document -> String
-explainDocument (MakeDocument _ []) = ""
-explainDocument (MakeDocument stat (block:blocks)) = (explainBlock block stat) ++ (explainDocument (MakeDocument stat blocks))
+explainDocument (MakeDocument stat blocks) = _explainDocument blocks stat blocks
 
-explainBlock :: Block -> Statistics -> String
-explainBlock (RawBlock strs) _ = unlines strs
-explainBlock (CommentBlock strs) _ = "////\n" ++ unlines strs ++ "////\n"
-explainBlock block@(CodeFileBlock path _ _) (MakeStatistics codefile_part_map _ _) = explainCodeFileBlock block part where
+_explainDocument :: [Block] -> Statistics -> [Block] -> String
+_explainDocument [] _ _ = ""
+_explainDocument (block:blocks) stat all_blocks = explainBlock block stat all_blocks ++ _explainDocument blocks stat all_blocks
+
+explainBlock :: Block -> Statistics -> [Block] -> String
+explainBlock (RawBlock strs) _ _ = unlines strs
+explainBlock (CommentBlock strs) _ _ = "////\n" ++ unlines strs ++ "////\n"
+explainBlock block@(CodeFileBlock path _ _) (MakeStatistics codefile_part_map _ _) _ = explainCodeFileBlock block part where
     part = (codefile_part_map Map.! path)
-explainBlock block@(ChunkBlock name form _ _) (MakeStatistics _ chunk_form_map chunk_part_map) = explainChunkBlock block max_form max_part where
+explainBlock block@(ChunkBlock name form _ _) (MakeStatistics _ chunk_form_map chunk_part_map) all_blocks = explainChunkBlock block max_form max_part all_blocks where
     max_form = chunk_form_map Map.! name
     max_part = chunk_part_map Map.! (name, form)
 
-explainChunkBlock :: Block -> Int -> Int -> String
-explainChunkBlock (ChunkBlock name form part content) max_form max_part = ""
+explainChunkBlock :: Block -> Int -> Int -> [Block] -> String
+explainChunkBlock (ChunkBlock name form part content) max_form max_part all_blocks = ""
     ++ "." ++ render_name ++ sortingNote part max_part ++ "\n"
     ++ "[#" ++ label_name ++ "]\n"
     ++ "++++\n"
@@ -119,13 +122,37 @@ explainChunkBlock (ChunkBlock name form part content) max_form max_part = ""
     ++ (unlines $ map explainChunkContentLine content)
     ++ "</div>\n"
     ++ "<div class=\"title\"><sup>"
+    ++ usedBy name form all_blocks ++ "<br>"
     ++ chunkNavigation (escapeChunkName name ++ "_" ++ show form) render_name part max_part
     ++ "</sup></div>"
     ++ "</div>\n"
     ++ "++++\n"
     where
-        render_name = name ++ " (form " ++ show form ++ ")"
+        render_name = name ++ if max_form > 1 then " (form " ++ show form ++ ")" else ""
         label_name = chunkLabel name form part
+
+usedBy :: String -> Int -> [Block] -> String
+usedBy name form blocks = "Used by:" ++ _usedBy name form blocks
+
+_usedBy :: String -> Int -> [Block] -> String
+_usedBy _ _ [] = ""
+_usedBy target_name target_form ((CodeFileBlock path part content):blocks) = usedByCodeFileBlock target_name target_form path part content ++ _usedBy target_name target_form blocks
+_usedBy target_name target_form ((ChunkBlock name form part content):blocks) = usedByChunkBlock target_name target_form name form part content ++ _usedBy target_name target_form blocks
+_usedBy target_name target_form (_:blocks) = _usedBy target_name target_form blocks
+
+usedByCodeFileBlock :: String -> Int -> String -> Int -> [ChunkLine] -> String
+usedByCodeFileBlock _ _ _ _ [] = ""
+usedByCodeFileBlock target_name target_form path part ((ChunkReference ref_name ref_form _):content)
+    | target_name == ref_name && target_form == ref_form = "" ++ " <a href=\"#" ++ codeFileLabel path part ++ "\">" ++ path ++ "</a>"
+    | otherwise = usedByCodeFileBlock target_name target_form path part content
+usedByCodeFileBlock target_name target_form path part (_:content) = usedByCodeFileBlock target_name target_form path part content
+
+usedByChunkBlock :: String -> Int -> String -> Int -> Int -> [ChunkLine] -> String
+usedByChunkBlock _ _ _ _ _ [] = ""
+usedByChunkBlock target_name target_form name form part ((ChunkReference ref_name ref_form _):content)
+    | target_name == ref_name && target_form == ref_form = "" ++ " <a href=\"#" ++ chunkLabel name form part ++ "\">" ++ name ++ "</a>"
+    | otherwise = usedByChunkBlock target_name target_form name form part content
+usedByChunkBlock target_name target_form name form part (_:content) = usedByChunkBlock target_name target_form name form part content
 
 escapeChunkName :: String -> String
 escapeChunkName "" = ""

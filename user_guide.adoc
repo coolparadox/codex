@@ -430,8 +430,8 @@ issue the following in the document:
 ....
 ////
 ///reset
-/my chunk
-/my other chunk
+my chunk
+my other chunk
 ////
 ....
 

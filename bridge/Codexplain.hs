@@ -21,7 +21,8 @@ data Block =
     RawBlock [String] |
     CommentBlock [String] |
     CodeFileBlock String Int [ChunkLine] |
-    ChunkBlock String Int Int [ChunkLine] deriving Show
+    ChunkBlock String Int Int [ChunkLine] |
+    ResetDirective deriving Show
 
 parse :: String -> Document
 parse str = MakeDocument statistics promoted_blocks where
@@ -37,11 +38,20 @@ promoteCommentBlocks (block:blocks) stat = (promoted_block:promoted_blocks, upda
 promoteCommentBlock :: Block -> Statistics -> (Block, Statistics)
 promoteCommentBlock block@(CommentBlock (x:xs)) stat
     | take 4 x == "////" = (block, stat)
+    | take 8 x == "///reset" = promoteToResetDirective xs stat
     | take 3 x == "///" = (block, stat)
     | take 2 x == "//" = promoteToCodeFileBlock (drop 2 x) xs stat
     | take 1 x == "/" = promoteToChunkBlock (drop 1 x) xs stat
     | otherwise = (block, stat)
 promoteCommentBlock block stat = (block, stat)
+
+promoteToResetDirective :: [String] -> Statistics -> (Block, Statistics)
+promoteToResetDirective content stat = (ResetDirective, new_stat) where
+    new_stat = foldr resetChunkForm stat content
+
+resetChunkForm :: String -> Statistics -> Statistics
+resetChunkForm name (MakeStatistics codefile_part_map chunk_form_map chunk_part_map) = MakeStatistics codefile_part_map new_chunk_form_map chunk_part_map where
+    new_chunk_form_map = Map.adjust succ name chunk_form_map
 
 promoteToChunkBlock :: String -> [String] -> Statistics -> (Block, Statistics)
 promoteToChunkBlock name content stat@(MakeStatistics codefile_part_map chunk_form_map chunk_part_map) = (block, MakeStatistics codefile_part_map new_chunk_form_map new_chunk_part_map) where
@@ -110,6 +120,7 @@ explainBlock block@(CodeFileBlock path _ _) (MakeStatistics codefile_part_map _ 
 explainBlock block@(ChunkBlock name form _ _) (MakeStatistics _ chunk_form_map chunk_part_map) all_blocks = explainChunkBlock block max_form max_part all_blocks where
     max_form = chunk_form_map Map.! name
     max_part = chunk_part_map Map.! (name, form)
+explainBlock ResetDirective _ _ = ""
 
 explainChunkBlock :: Block -> Int -> Int -> [Block] -> String
 explainChunkBlock (ChunkBlock name form part content) max_form max_part all_blocks = ""

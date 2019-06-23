@@ -33,7 +33,7 @@ _Codexplain_ is designed as a stream processor:
 
 ////
 ///reset
-/main declarations
+main declarations
 ////
 
 ////

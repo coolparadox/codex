@@ -100,10 +100,10 @@ Let's access each line of input.
 
 ////
 ///reset
-/setup stream 'fin' for reading file 'path'
-/read 'line' from 'fin'
-/expand 'line'
-/handle 'fin' termination
+setup stream 'fin' for reading file 'path'
+read 'line' from 'fin'
+expand 'line'
+handle 'fin' termination
 ////
 
 ////
@@ -155,9 +155,9 @@ bool inside_comment_block { false };
 
 ////
 ///reset
-/start comment block expansion
-/append line to comment block expansion
-/end comment block expansion
+start comment block expansion
+append line to comment block expansion
+end comment block expansion
 ////
 
 ////
@@ -203,9 +203,9 @@ comment_block.push_back(line);
 
 ////
 ///reset
-/is comment block a codex include?
-/replace block by inclusion of new file
-/copy block to output
+is comment block a codex include?
+replace block by inclusion of new file
+copy block to output
 
 ////
 

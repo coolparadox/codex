@@ -1,0 +1,46 @@
+== Application
+
+*hello* is an application for greeting the world.
+
+////
+///reset
+targets
+////
+
+////
+//hello.c
+/hello includes
+
+/targets
+////
+
+////
+/hello includes
+#include <stdio.h>
+////
+
+////
+/targets
+int main()
+{
+    /say hello
+    /return
+}
+////
+
+////
+/say hello
+/\printf("
+/\/message
+");
+////
+
+////
+/message
+Hello world!
+////
+
+////
+/return
+return 0;
+////

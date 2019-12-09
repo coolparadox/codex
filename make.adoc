@@ -1,0 +1,49 @@
+== Makefile
+
+This implements a Makefile that builds *hello*.
+
+////
+///reset
+targets
+////
+
+////
+//Makefile
+/\.PHONY: 
+/phonies
+/targets
+////
+
+The default target is *hello*:
+
+////
+/targets
+
+all: hello
+////
+
+////
+/phonies
+/\ all
+////
+
+////
+/targets
+
+hello: hello.c
+	$(CC) -o $@ @<
+////
+
+Also let's add cleaning.
+
+////
+/targets
+
+clean:
+	$(RM) -f hello *.o
+////
+
+////
+/phonies
+/\ clean
+////

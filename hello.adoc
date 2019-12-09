@@ -1,0 +1,24 @@
+= Hello
+Rafael Lorandi <coolparadox@gmail.com>
+:doctype: book
+:sectnums:
+:toc: left
+:revnumber: 0.0
+:revdate: 08-12-2019
+:revremark: draft
+////
+///codex
+////
+
+////
+///style
+////
+
+This implements a hello world application.
+
+This document is intended to serve as a sample for the codex tool.
+
+////
+///include
+system.adoc
+////

@@ -7,11 +7,11 @@ Rafael Lorandi <coolparadox@gmail.com>
 :revdate: 08-12-2019
 :revremark: draft
 ////
-///codex
+//codex
 ////
 
 ////
-///style
+//style
 ////
 
 This implements a hello world application.
@@ -19,6 +19,6 @@ This implements a hello world application.
 This document is intended to serve as a sample for the codex tool.
 
 ////
-///include
+//include
 system.adoc
 ////

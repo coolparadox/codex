@@ -21,69 +21,110 @@ expand() {
     local STACK="$2"
     for F in $STACK ; do
         test "$F" = "$PATH" && {
-            echo "$ME: ///include error: inclusion loop detected" >&2
+            echo "$ME: //include error: inclusion loop detected" >&2
             echo "inclusion stack is:$STACK $PATH" >&2
             exit 1
         } || :
     done
     test -r "$PATH" || {
-        echo "$ME: ///include error: cannot read file '$PATH'" >&2
+        echo "$ME: //include error: cannot read file '$PATH'" >&2
         exit 1
     }
-    local RANK=0
+    local STATE=0
     local INCLUDE=''
     while IFS='' read -r LINE ; do
-        case $RANK in
-            0)
-                if test "$LINE" = '////' ; then
-                    RANK=1
-                else
-                    echo -E "$LINE"
-                fi
+        case $STATE in
+        0)
+            case $LINE in
+            ////)
+                STATE=1
                 ;;
-            1)
-                if test "$LINE" = '///include' ; then
-                    RANK=2
-                else
-                    RANK=4
-                    echo '////'
-                    echo -E "$LINE"
-                fi
-                ;;
-            2)
-                case "$LINE" in
-                    /*)
-                        RANK=4
-                        echo '////'
-                        echo '///include'
-                        echo -E "$LINE"
-                        ;;
-                    *)
-                        RANK=3
-                        INCLUDE="$LINE"
-                        ;;
-                esac
-                ;;
-            3)
-                if test "$LINE" = '////' ; then
-                    RANK=0
-                    expand "$INCLUDE" "$STACK $PATH"
-                else
-                    RANK=4
-                    echo '////'
-                    echo '///include'
-                    echo -E "$INCLUDE"
-                    echo -E "$LINE"
-                fi
-                ;;
-            4)
-                if test "$LINE" = '////' ; then
-                    RANK=0
-                fi
+            *)
                 echo -E "$LINE"
                 ;;
+            esac
+            ;;
+        1)
+            case $LINE in
+            //include)
+                STATE=2
+                ;;
+            *)
+                STATE=4
+                echo '////'
+                echo -E "$LINE"
+                ;;
+            esac
+            ;;
+        2)
+            case "$LINE" in
+            /*)
+                STATE=4
+                echo '////'
+                echo '//include'
+                echo -E "$LINE"
+                ;;
+            *)
+                STATE=3
+                INCLUDE="$LINE"
+                ;;
+            esac
+            ;;
+        3)
+            case $LINE in
+            ////)
+                STATE=0
+                expand "$INCLUDE" "$STACK $PATH"
+                ;;
+            *)
+                STATE=4
+                echo '////'
+                echo '//include'
+                echo -E "$INCLUDE"
+                echo -E "$LINE"
+                ;;
+            esac
+            ;;
+        4)
+            case $LINE in
+            ////)
+                STATE=0
+                ;;
+            esac
+            echo -E "$LINE"
+            ;;
         esac
     done <"$PATH"
 }
 
-expand "$TARGET" ''
+DB_DIR=.codex
+rm -rf $DB_DIR
+mkdir -p $DB_DIR
+
+parse() {
+    local STATE=a
+    while IFS='' read -r LINE ; do
+        case $STATE in
+        a)
+            case $LINE in
+            ////)
+                STATE=b
+                ;;
+            *)
+                echo -E "a:$LINE"
+                ;;
+            esac
+            ;;
+        b)
+            case $LINE in
+            ////)
+                STATE=a
+                ;;
+            esac
+            ;;
+        esac
+    done
+}
+
+expand "$TARGET" '' | \
+parse

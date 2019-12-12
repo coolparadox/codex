@@ -3,24 +3,24 @@
 *hello* is an application for greeting the world.
 
 ////
-///reset
+//reset
 targets
 ////
 
 ////
-//hello.c
+/hello.c
 /hello includes
 
 /targets
 ////
 
 ////
-/hello includes
+hello includes
 #include <stdio.h>
 ////
 
 ////
-/targets
+targets
 int main()
 {
     /say hello
@@ -29,18 +29,18 @@ int main()
 ////
 
 ////
-/say hello
+say hello
 /\printf("
 /\/message
 ");
 ////
 
 ////
-/message
+message
 Hello world!
 ////
 
 ////
-/return
+return
 return 0;
 ////

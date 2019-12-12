@@ -1,11 +1,11 @@
 = System Specification
 
 ////
-///include
+//include
 application.adoc
 ////
 
 ////
-///include
+//include
 make.adoc
 ////

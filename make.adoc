@@ -3,12 +3,12 @@
 This implements a Makefile that builds *hello*.
 
 ////
-///reset
+//reset
 targets
 ////
 
 ////
-//Makefile
+/Makefile
 /\.PHONY: 
 /phonies
 /targets
@@ -17,18 +17,18 @@ targets
 The default target is *hello*:
 
 ////
-/targets
+targets
 
 all: hello
 ////
 
 ////
-/phonies
+phonies
 /\ all
 ////
 
 ////
-/targets
+targets
 
 hello: hello.c
 	$(CC) -o $@ @<
@@ -37,13 +37,13 @@ hello: hello.c
 Also let's add cleaning.
 
 ////
-/targets
+targets
 
 clean:
 	$(RM) -f hello *.o
 ////
 
 ////
-/phonies
+phonies
 /\ clean
 ////

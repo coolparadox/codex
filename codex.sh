@@ -51,7 +51,7 @@ expand() {
                 ;;
             *)
                 STATE=4
-                echo '////'
+                echo ////
                 echo -E "$LINE"
                 ;;
             esac
@@ -60,8 +60,8 @@ expand() {
             case "$LINE" in
             /*)
                 STATE=4
-                echo '////'
-                echo '//include'
+                echo ////
+                echo //include
                 echo -E "$LINE"
                 ;;
             *)
@@ -78,8 +78,8 @@ expand() {
                 ;;
             *)
                 STATE=4
-                echo '////'
-                echo '//include'
+                echo ////
+                echo //include
                 echo -E "$INCLUDE"
                 echo -E "$LINE"
                 ;;
@@ -101,27 +101,93 @@ DB_DIR=.codex
 rm -rf $DB_DIR
 mkdir -p $DB_DIR
 
+fail() {
+    echo "${ME}: error: $*"
+    exit 1
+}
+
 parse() {
-    local STATE=a
+    local STATE=adoc
+    local FILE
     while IFS='' read -r LINE ; do
         case $STATE in
-        a)
+
+        adoc)
             case $LINE in
+
             ////)
-                STATE=b
+                STATE=block
                 ;;
+
             *)
                 echo -E "a:$LINE"
                 ;;
+
             esac
             ;;
-        b)
+
+        block)
             case $LINE in
+
             ////)
-                STATE=a
+                STATE=adoc
                 ;;
+
+            ///*)
+                fail "unexpected slash heading at '$LINE'"
+                ;;
+
+            //*)
+                SPECIAL=${LINE#//}
+                STATE=special
+                ;;
+
+            /*)
+                FILE=$( realpath -m --relative-to=/ "$LINE" )
+                STATE=file
+                ;;
+
+            *)
+                CHUNK=$LINE
+                STATE=chunk
+                ;;
+
             esac
             ;;
+
+        special)
+            case $LINE in
+
+                ////)
+                    STATE=adoc
+                    echo "s:$SPECIAL"
+                    ;;
+
+            esac
+            ;;
+
+        file)
+            case $LINE in
+
+                ////)
+                    STATE=adoc
+                    echo "f:$FILE"
+                    ;;
+
+            esac
+            ;;
+
+        chunk)
+            case $LINE in
+
+                ////)
+                    STATE=adoc
+                    echo "c:$CHUNK"
+                    ;;
+
+            esac
+            ;;
+
         esac
     done
 }

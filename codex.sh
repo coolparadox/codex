@@ -97,9 +97,9 @@ expand() {
     done <"$PATH"
 }
 
-DB_DIR=.codex
-rm -rf $DB_DIR
-mkdir -p $DB_DIR
+WD=.codex
+rm -rf $WD
+mkdir -p $WD
 
 fail() {
     echo "${ME}: error: $*"
@@ -108,18 +108,23 @@ fail() {
 
 parse() {
     local STATE=adoc
-    local FILE
+    local NAME=''
+    local PART=0
+    local FORM=0
     while IFS='' read -r LINE ; do
         case $STATE in
 
         adoc)
+            # I'm parsing regular asciidoc text.
             case $LINE in
 
             ////)
+                # A comment block started.
                 STATE=block
                 ;;
 
             *)
+                # The line is part of the regular ascidoc content.
                 echo -E "a:$LINE"
                 ;;
 
@@ -127,28 +132,34 @@ parse() {
             ;;
 
         block)
+            # I'm parsing the first line of a comment block.
             case $LINE in
 
             ////)
+                # The comment block ended.
                 STATE=adoc
                 ;;
 
             ///*)
+                # The line does not tell if the block is one of the expected codex constructs.
                 fail "unexpected slash heading at '$LINE'"
                 ;;
 
             //*)
+                # The block is a codex special.
                 SPECIAL=${LINE#//}
                 STATE=special
                 ;;
 
             /*)
-                FILE=$( realpath -m --relative-to=/ "$LINE" )
+                # The block is another part of a codex file.
+                NAME=$( realpath -m --relative-to=/ "$LINE" )
                 STATE=file
                 ;;
 
             *)
-                CHUNK=$LINE
+                # The block is another part of the current form of a codex chunk.
+                NAME=$LINE
                 STATE=chunk
                 ;;
 
@@ -156,6 +167,8 @@ parse() {
             ;;
 
         special)
+            # I'm parsing a codex special.
+            # FIXME: remove this state when all specials are covered by the state machine.
             case $LINE in
 
                 ////)
@@ -167,22 +180,26 @@ parse() {
             ;;
 
         file)
+            # I'm parsing part $PART of file $NAME.
             case $LINE in
 
                 ////)
+                    # Part $PART of file $NAME ended.
                     STATE=adoc
-                    echo "f:$FILE"
+                    echo "f:$NAME"
                     ;;
 
             esac
             ;;
 
         chunk)
+            # I'm parsing part $PART of form $FORM of chunk $NAME.
             case $LINE in
 
                 ////)
+                    # Part $PART of form $FORM of chunk $NAME ended.
                     STATE=adoc
-                    echo "c:$CHUNK"
+                    echo "c:$NAME"
                     ;;
 
             esac

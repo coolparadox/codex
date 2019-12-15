@@ -129,8 +129,9 @@ get_chunk_current_form() {
         FORM=$(cat "$COUNT_FILE")
     else
         FORM=1
+        mkdir -p "$WD/chunks/$NAME"
     fi
-    echo $FORM >$COUNT_FILE
+    echo $FORM >"$COUNT_FILE"
     echo $FORM
 }
 

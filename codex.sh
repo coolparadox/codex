@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-set -e -u -o pipefail
+set -e -u -f -o pipefail
 
 ME=$( basename $0 )
 
@@ -106,10 +106,59 @@ fail() {
     exit 1
 }
 
+get_file_part_count() {
+    local NAME=$1
+    COUNT_FILE="$WD/files/$NAME/part_count"
+    if test -e $COUNT_FILE ; then
+        cat $COUNT_FILE
+    else
+        echo "0"
+    fi
+}
+
+parse_chunk_line() {
+    local LINE=$1
+    case $LINE in
+
+    /\\//*)
+        # Code line starting with slash, no line feed.
+        echo -E "c+${LINE:3}"
+        ;;
+
+    /\\/*)
+        # Chunk reference, no line feed.
+        echo -E "r+${LINE:3}"
+        ;;
+
+    /\\*)
+        # Code line not starting with slash, no line feed.
+        echo -E "c+${LINE:2}"
+        ;;
+
+    //*)
+        # Code line starting with slash, with line feed.
+        echo -E "c.${LINE:1}"
+        ;;
+
+    /*)
+        # Chunk reference, with line feed.
+        echo -E "r.${LINE:1}"
+        ;;
+
+    *)
+        # Code line not starting with slash, with line feed.
+        echo -E "c.${LINE:0}"
+        ;;
+
+    esac
+
+}
+
 parse() {
     local STATE=adoc
     local NAME=''
     local PART=0
+    local PART_DIR=''
     local FORM=0
     while IFS='' read -r LINE ; do
         case $STATE in
@@ -125,7 +174,7 @@ parse() {
 
             *)
                 # The line is part of the regular ascidoc content.
-                echo -E "a:$LINE"
+                echo -E "a$LINE"
                 ;;
 
             esac
@@ -153,7 +202,10 @@ parse() {
 
             /*)
                 # The block is another part of a codex file.
-                NAME=$( realpath -m --relative-to=/ "$LINE" )
+                NAME=$(realpath -m --relative-to=/ "$LINE")
+                PART=$((1 + $(get_file_part_count "$NAME")))
+                PART_DIR="$WD/files/$NAME/parts/$PART"
+                mkdir -p "$PART_DIR"
                 STATE=file
                 ;;
 
@@ -173,7 +225,7 @@ parse() {
 
                 ////)
                     STATE=adoc
-                    echo "s:$SPECIAL"
+                    echo "s$SPECIAL"
                     ;;
 
             esac
@@ -186,7 +238,11 @@ parse() {
                 ////)
                     # Part $PART of file $NAME ended.
                     STATE=adoc
-                    echo "f:$NAME"
+                    echo "f$PART,$NAME"
+                    ;;
+
+                *)
+                    parse_chunk_line "$LINE" >>"$PART_DIR/content"
                     ;;
 
             esac
@@ -199,7 +255,7 @@ parse() {
                 ////)
                     # Part $PART of form $FORM of chunk $NAME ended.
                     STATE=adoc
-                    echo "c:$NAME"
+                    echo "c$NAME"
                     ;;
 
             esac

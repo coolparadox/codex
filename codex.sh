@@ -354,7 +354,7 @@ parse() {
 
                 *)
                     # Line is the name of a chunk to be reset.
-                    bump_chunk_form "$LINE"
+                    bump_chunk_form "$LINE" >/dev/null
                     ;;
 
             esac

@@ -124,11 +124,33 @@ bump_file_part() {
 get_chunk_current_form() {
     local NAME=$1
     COUNT_FILE="$WD/chunks/$NAME/form_count"
+    local FORM
     if test -e "$COUNT_FILE" ; then
-        cat "$COUNT_FILE"
+        FORM=$(cat "$COUNT_FILE")
     else
-        echo "0"
+        FORM=1
     fi
+    echo $FORM >$COUNT_FILE
+    echo $FORM
+}
+
+bump_chunk_form() {
+    local NAME=$1
+    COUNT_FILE="$WD/chunks/$NAME/form_count"
+    local FORM
+    if test -e "$COUNT_FILE" ; then
+        FORM=$(cat "$COUNT_FILE")
+    else
+        mkdir -p "$WD/chunks/$NAME"
+        FORM=1
+    fi
+    if test -s "$WD/chunks/$NAME/forms/$FORM/parts/1/content" ; then
+        FORM=$(($FORM + 1))
+    else
+        :
+    fi
+    echo $FORM >"$COUNT_FILE"
+    echo $FORM
 }
 
 bump_chunk_part() {
@@ -227,8 +249,20 @@ parse() {
 
             //*)
                 # The block is a codex special.
-                SPECIAL=${LINE#//}
-                STATE=special
+                SPECIAL=${LINE:2}
+                case $SPECIAL in
+
+                reset)
+                    # The codex special is a reset directive.
+                    STATE=reset
+                    ;;
+
+                *)
+                    # FIXME: temporary fallback while all specials are not yet covered.
+                    STATE=special
+                    ;;
+
+                esac
                 ;;
 
             /*)
@@ -272,8 +306,11 @@ parse() {
 
                 ////)
                     # Part $PART of file $NAME ended.
-                    STATE=adoc
+                    test -s "$PART_DIR/content" || {
+                        fail "file '$NAME': empty definition."
+                    }
                     echo "f$PART,$NAME"
+                    STATE=adoc
                     ;;
 
                 *)
@@ -290,8 +327,11 @@ parse() {
 
                 ////)
                     # Part $PART of form $FORM of chunk $NAME ended.
-                    STATE=adoc
+                    test -s "$PART_DIR/content" || {
+                        fail "chunk '$NAME': empty definition."
+                    }
                     echo "c$NAME"
+                    STATE=adoc
                     ;;
 
                 *)
@@ -300,6 +340,27 @@ parse() {
                     ;;
 
             esac
+            ;;
+
+        reset)
+            # I'm parsing a reset directive.
+            case $LINE in
+
+                ////)
+                    # End or reset directive.
+                    STATE=adoc
+                    ;;
+
+                *)
+                    # Line is the name of a chunk to be reset.
+                    bump_chunk_form "$LINE"
+                    ;;
+
+            esac
+            ;;
+
+        *)
+            fail "internal error: unknown state '$STATE'."
             ;;
 
         esac

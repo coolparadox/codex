@@ -11,10 +11,14 @@ targets
 /Makefile
 /\.PHONY: 
 /phonies
-/targets
 ////
 
 The default target is *hello*:
+
+////
+/Makefile
+/targets
+////
 
 ////
 targets

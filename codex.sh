@@ -106,14 +106,45 @@ fail() {
     exit 1
 }
 
-get_file_part_count() {
+bump_file_part() {
     local NAME=$1
     COUNT_FILE="$WD/files/$NAME/part_count"
-    if test -e $COUNT_FILE ; then
-        cat $COUNT_FILE
+    local PART
+    if test -e "$COUNT_FILE" ; then
+        PART=$(cat "$COUNT_FILE")
+    else
+        PART=0
+        mkdir -p "$WD/files/$NAME"
+    fi
+    PART=$(($PART + 1))
+    echo $PART >"$COUNT_FILE"
+    echo $PART
+}
+
+get_chunk_current_form() {
+    local NAME=$1
+    COUNT_FILE="$WD/chunks/$NAME/form_count"
+    if test -e "$COUNT_FILE" ; then
+        cat "$COUNT_FILE"
     else
         echo "0"
     fi
+}
+
+bump_chunk_part() {
+    local NAME=$1
+    local FORM=$2
+    COUNT_FILE="$WD/chunks/$NAME/forms/$FORM/part_count"
+    local PART
+    if test -e "$COUNT_FILE" ; then
+        PART=$(cat "$COUNT_FILE")
+    else
+        mkdir -p "$WD/chunks/$NAME/forms/$FORM"
+        PART=0
+    fi
+    PART=$(($PART + 1))
+    echo $PART >"$COUNT_FILE"
+    echo $PART
 }
 
 parse_chunk_line() {
@@ -203,7 +234,7 @@ parse() {
             /*)
                 # The block is another part of a codex file.
                 NAME=$(realpath -m --relative-to=/ "$LINE")
-                PART=$((1 + $(get_file_part_count "$NAME")))
+                PART=$(bump_file_part "$NAME")
                 PART_DIR="$WD/files/$NAME/parts/$PART"
                 mkdir -p "$PART_DIR"
                 STATE=file
@@ -212,6 +243,10 @@ parse() {
             *)
                 # The block is another part of the current form of a codex chunk.
                 NAME=$LINE
+                FORM=$(get_chunk_current_form "$NAME")
+                PART=$(bump_chunk_part "$NAME" $FORM)
+                PART_DIR="$WD/chunks/$NAME/forms/$FORM/parts/$PART"
+                mkdir -p "$PART_DIR"
                 STATE=chunk
                 ;;
 
@@ -242,6 +277,7 @@ parse() {
                     ;;
 
                 *)
+                    # Line is part of the definition of the file.
                     parse_chunk_line "$LINE" >>"$PART_DIR/content"
                     ;;
 
@@ -256,6 +292,11 @@ parse() {
                     # Part $PART of form $FORM of chunk $NAME ended.
                     STATE=adoc
                     echo "c$NAME"
+                    ;;
+
+                *)
+                    # Line is part of the definition of the chunk.
+                    parse_chunk_line "$LINE" >>"$PART_DIR/content"
                     ;;
 
             esac

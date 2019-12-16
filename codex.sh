@@ -378,23 +378,26 @@ parse() {
 expand "$TARGET" '' | \
 parse >$WD/content
 
-rm -rf src
-mkdir -p src
-find $WD/files -mindepth 1 -maxdepth 1 -type d | \
-xargs -r basename -a | \
-while read NAME ; do
-    FILE_DIR="$WD/files/$NAME"
-    find "$FILE_DIR/parts" -mindepth 1 -maxdepth 1 -type d | \
+extrude() {
+    CHUNK_DIR=$1
+    find "$CHUNK_DIR/parts" -mindepth 1 -maxdepth 1 -type d | \
     xargs basename -a | \
     sort -n | \
     while read PART ; do
-        PART_DIR="$FILE_DIR/parts/$PART"
-        cat "$PART_DIR/content"
-    done | \
-    while read LINE ; do
-        # FIXME: dereference content
-        echo -E "$LINE"
-    done >"src/$NAME"
-done
+        PART_DIR="$CHUNK_DIR/parts/$PART"
+        while IFS='' read -r LINE ; do
+            # FIXME: dereference content
+            echo -E "$LINE"
+        done <"$PART_DIR/content"
+    done
+}
 
+SDIR=src
+rm -rf $SDIR
+mkdir -p $SDIR
+find $WD/files -mindepth 1 -maxdepth 1 -type d | \
+xargs -r basename -a | \
+while read NAME ; do
+    extrude "$WD/files/$NAME" >"$SDIR/$NAME"
+done
 

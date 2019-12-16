@@ -108,13 +108,14 @@ fail() {
 
 bump_file_part() {
     local NAME=$1
-    COUNT_FILE="$WD/files/$NAME/part_count"
+    FILE_DIR="$WD/files/$NAME"
+    COUNT_FILE="$FILE_DIR/part_count"
     local PART
     if test -e "$COUNT_FILE" ; then
         PART=$(cat "$COUNT_FILE")
     else
         PART=0
-        mkdir -p "$WD/files/$NAME"
+        mkdir -p "$FILE_DIR"
     fi
     PART=$(($PART + 1))
     echo $PART >"$COUNT_FILE"
@@ -123,29 +124,31 @@ bump_file_part() {
 
 get_chunk_current_form() {
     local NAME=$1
-    COUNT_FILE="$WD/chunks/$NAME/form_count"
+    CHUNK_DIR="$WD/chunks/$NAME"
+    COUNT_FILE="$CHUNK_DIR/form_count"
     local FORM
     if test -e "$COUNT_FILE" ; then
         FORM=$(cat "$COUNT_FILE")
     else
         FORM=1
-        mkdir -p "$WD/chunks/$NAME"
+        mkdir -p "$CHUNK_DIR"
+        echo $FORM >"$COUNT_FILE"
     fi
-    echo $FORM >"$COUNT_FILE"
     echo $FORM
 }
 
 bump_chunk_form() {
     local NAME=$1
-    COUNT_FILE="$WD/chunks/$NAME/form_count"
+    CHUNK_DIR="$WD/chunks/$NAME"
+    COUNT_FILE="$CHUNK_DIR/form_count"
     local FORM
     if test -e "$COUNT_FILE" ; then
         FORM=$(cat "$COUNT_FILE")
     else
-        mkdir -p "$WD/chunks/$NAME"
+        mkdir -p "$CHUNK_DIR"
         FORM=1
     fi
-    if test -s "$WD/chunks/$NAME/forms/$FORM/parts/1/content" ; then
+    if test -s "$CHUNK_DIR/forms/$FORM/parts/1/content" ; then
         FORM=$(($FORM + 1))
     else
         :
@@ -181,7 +184,9 @@ parse_chunk_line() {
 
     /\\/*)
         # Chunk reference, no line feed.
-        echo -E "r+${LINE:3}"
+        NAME=${LINE:3}
+        FORM=$(get_chunk_current_form "$NAME")
+        echo -E "r+${FORM},$NAME"
         ;;
 
     /\\*)
@@ -196,7 +201,9 @@ parse_chunk_line() {
 
     /*)
         # Chunk reference, with line feed.
-        echo -E "r.${LINE:1}"
+        NAME=${LINE:1}
+        FORM=$(get_chunk_current_form "$NAME")
+        echo -E "r.${FORM},$NAME"
         ;;
 
     *)
@@ -369,4 +376,4 @@ parse() {
 }
 
 expand "$TARGET" '' | \
-parse
+parse >$WD/content
